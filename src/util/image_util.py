@@ -37,6 +37,7 @@ def print_imgs(*imgs) -> None:
     """
     for index, img in enumerate(imgs):
         cv2.imshow(str(index), img)
+    cv2.waitKey()
     cv2.destroyAllWindows()
 
 
