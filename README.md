@@ -5,3 +5,7 @@
 - [\$root\$](./README.md): root folder
     - [static](./static/README.md): image folder
     - [src](./src/README.md): source code
+
+## environment
+
+- opencv
