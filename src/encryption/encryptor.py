@@ -36,10 +36,11 @@ class Encryptor:
         for i in range(1, 4):
             self.PEs[i] = self.Ps[i] - self.Is[i]
         self.PEs[0] = self.Is[0]
-        # 计算PEA
+        # 计算PEA, 同时嵌入location map
         for i in range(4):
             self.PEAs[i] = self.PEs[i]
             self.PEAs[i][self.PEAs[i] < 0] = abs(self.PEAs[i][self.PEAs[i] < 0]) + 64
+            self.PEAs[i][self.PEAs[i] > 64] = self.PEAs[i][self.PEAs[i] > 64] | 0b10000000
 
     def __predict01(self):
         I0 = self.Is[0]
