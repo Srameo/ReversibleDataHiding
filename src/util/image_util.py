@@ -29,6 +29,17 @@ def print_img(img: np.ndarray, name: str = "image") -> None:
     cv2.waitKey()
     cv2.destroyWindow(name)
 
+def print_imgs(*imgs) -> None:
+    """
+    打印一个图片，此时程序会进入阻塞状态！直到输入任一字符！
+    :param imgs: 图片的数组
+    :return: None
+    """
+    for index, img in enumerate(imgs):
+        cv2.imshow(str(index), img)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
+
 
 def save_img(img: np.ndarray, file: str) -> None:
     """

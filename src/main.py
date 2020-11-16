@@ -15,4 +15,5 @@ if __name__ == '__main__':
     out_file_name = "200px-Gray-Lenna.jpg"
     out_file_path = pu.path_join(root_path, pu.OUTPUT_PATH, out_file_name)
 
-    iu.save_img(gray_lena, out_file_path)
+    # iu.save_img(gray_lena, out_file_path)
+    iu.print_imgs(gray_lena, color_lena)
