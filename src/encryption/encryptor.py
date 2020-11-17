@@ -35,10 +35,10 @@ class Encryptor:
         # 计算 PE
         for i in range(1, 4):
             self.PEs[i] = self.Ps[i] - self.Is[i]
-        self.PEs[0] = self.Is[0]
+        self.PEs[0] = np.copy(self.Is[0])
         # 计算PEA, 同时嵌入location map
         for i in range(4):
-            self.PEAs[i] = self.PEs[i]
+            self.PEAs[i] = np.copy(self.PEs[i])
             self.PEAs[i][self.PEAs[i] < 0] = abs(self.PEAs[i][self.PEAs[i] < 0]) + 64
             self.PEAs[i][self.PEAs[i] > 64] = self.PEAs[i][self.PEAs[i] > 64] | 0b10000000
 
@@ -91,6 +91,21 @@ class Encryptor:
 
         self.Ps[3][h - 1, w - 1] = I0[h - 1, w - 1]
 
+    def get_gull_img(self, imgs: str = "I"):
+        res = np.zeros((self.H, self.W), np.int)
+        h, w = int(self.H / 2), int(self.W / 2)
+        if imgs == "PEA":
+            arr = self.PEAs
+        elif imgs == "PE":
+            arr = self.PEs
+        else:
+            arr = self.Is
+        res[0:h, 0:w] = arr[0]
+        res[0:h, w:self.W] = arr[1]
+        res[h:self.H, 0:w] = arr[2]
+        res[h:self.H, w:self.W] = arr[2]
+        return res.astype(np.uint8)
+
 
 if __name__ == '__main__':
     root_path = pu.get_root_path()
@@ -103,5 +118,6 @@ if __name__ == '__main__':
     e.decomposition()
     e.predict()
 
-    for img in e.PEAs:
-        iu.print_img(img.astype(np.uint8))
+    iu.print_img(e.get_gull_img("I"))
+    iu.print_img(e.get_gull_img("PE"))
+    iu.print_img(e.get_gull_img("PEA"))
