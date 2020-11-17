@@ -1,5 +1,6 @@
 import src.util.image_util as iu
 import src.util.path_util as pu
+import cv2
 
 if __name__ == '__main__':
     root_path = pu.get_root_path()
@@ -8,6 +9,9 @@ if __name__ == '__main__':
 
     gray_lena = iu.read_img(file_path, iu.READ_GRAY)
     color_lena = iu.read_img(file_path, iu.READ_COLOR)
+
+    lab_lena = cv2.cvtColor(color_lena, cv2.COLOR_RGB2LAB)
+    iu.print_img(lab_lena)
 
     iu.print_img(gray_lena, "gray lena")
     iu.print_img(color_lena, "colorful lena")

@@ -6,12 +6,16 @@ import math
 
 class Encryptor:
 
-    def __init__(self, img: np.ndarray = None):
+    def __init__(self, img: np.ndarray = None, predict=None):
         self.Is = [None] * 4
         self.Ps = [None] * 4
         self.PEs = [None] * 4
         self.PEAs = [None] * 4
         self.src_img = img
+        if predict is None:
+            self.predict_method = Encryptor.predict_method1
+        else:
+            self.predict_method = predict
         if img is not None:
             self.H, self.W = img.shape
 
@@ -25,6 +29,12 @@ class Encryptor:
                 self.Is[1][i, j] = self.src_img[2 * i - 1, 2 * j]
                 self.Is[2][i, j] = self.src_img[2 * i, 2 * j - 1]
                 self.Is[3][i, j] = self.src_img[2 * i, 2 * j]
+
+    def error(self):
+        err1 = np.sum((self.PEs[1]) ** 2)
+        err2 = np.sum((self.PEs[2]) ** 2)
+        err3 = np.sum((self.PEs[3]) ** 2)
+        return (err1 + err2 + err3) / (self.H * self.W)
 
     def predict(self):
         # 计算P
@@ -41,6 +51,15 @@ class Encryptor:
             self.PEAs[i] = np.copy(self.PEs[i])
             self.PEAs[i][self.PEAs[i] < 0] = abs(self.PEAs[i][self.PEAs[i] < 0]) + 64
             self.PEAs[i][self.PEAs[i] > 64] = self.PEAs[i][self.PEAs[i] > 64] | 0b10000000
+            self.PEAs[i][self.PEAs[i] < 64] = self.PEAs[i][self.PEAs[i] < 64] & 0b01111111
+
+    @staticmethod
+    def predict_method1(a, b):
+        return math.ceil((a + b) / 2)
+
+    @staticmethod
+    def predict_method2(a, b):
+        return math.ceil(math.sqrt(a * b))
 
     def __predict01(self):
         I0 = self.Is[0]
@@ -49,7 +68,7 @@ class Encryptor:
         for i in range(h):
             for j in range(w):
                 if i == h:
-                    self.Ps[1][i, j] = math.ceil((I0[i, j] + I0[i, j + 1])/2)
+                    self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i, j + 1])
                 else:
                     self.Ps[1][i, j] = I0[i, j]
 
@@ -60,7 +79,7 @@ class Encryptor:
         for i in range(h):
             for j in range(w):
                 if j == w:
-                    self.Ps[2][i, j] = math.ceil((I0[i, j] + I0[i + 1, j]) / 2)
+                    self.Ps[2][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
                 else:
                     self.Ps[2][i, j] = I0[i, j]
 
@@ -79,15 +98,15 @@ class Encryptor:
         for i in range(h - 1):
             for j in range(w - 1):
                 if H1(i, j) < H2(i, j):
-                    self.Ps[3][i, j] = math.ceil((I0[i, j] + I0[i + 1, j + 1]) / 2)
+                    self.Ps[3][i, j] = self.predict_method(I0[i, j], I0[i + 1, j + 1])
                 else:
-                    self.Ps[3][i, j] = math.ceil((I0[i, j + 1] + I0[i + 1, j]) / 2)
+                    self.Ps[3][i, j] = self.predict_method(I0[i, j + 1], I0[i + 1, j])
 
         for i in range(h - 1):
-            self.Ps[3][i, w - 1] = math.ceil((I0[i, w - 1] + I0[i + 1, w - 1]) / 2)
+            self.Ps[3][i, w - 1] = self.predict_method(I0[i, w - 1], I0[i + 1, w - 1])
 
         for j in range(w - 1):
-            self.Ps[3][h - 1, j] = math.ceil((I0[h - 1, j] + I0[h - 1, j + 1]) / 2)
+            self.Ps[3][h - 1, j] = self.predict_method(I0[h - 1, j], I0[h - 1, j + 1])
 
         self.Ps[3][h - 1, w - 1] = I0[h - 1, w - 1]
 
@@ -98,6 +117,8 @@ class Encryptor:
             arr = self.PEAs
         elif imgs == "PE":
             arr = self.PEs
+        elif imgs == "P":
+            arr = self.Ps
         else:
             arr = self.Is
         res[0:h, 0:w] = arr[0]
@@ -114,10 +135,22 @@ if __name__ == '__main__':
 
     gray_lena = iu.read_img(file_path, iu.READ_GRAY)
 
-    e = Encryptor(gray_lena)
-    e.decomposition()
-    e.predict()
+    e1 = Encryptor(gray_lena, Encryptor.predict_method1)
+    e1.decomposition()
+    e1.predict()
 
-    iu.print_img(e.get_gull_img("I"))
-    iu.print_img(e.get_gull_img("PE"))
-    iu.print_img(e.get_gull_img("PEA"))
+    e2 = Encryptor(gray_lena, Encryptor.predict_method2)
+    e2.decomposition()
+    e2.predict()
+
+    print(e1.error())
+    print(e2.error())
+
+    iu.print_imgs(e1.get_gull_img("I"),
+                  e1.get_gull_img("P"),
+                  e1.get_gull_img("PE"),
+                  e1.get_gull_img("PEA"),
+                  e2.get_gull_img("I"),
+                  e2.get_gull_img("P"),
+                  e2.get_gull_img("PE"),
+                  e2.get_gull_img("PEA"))
