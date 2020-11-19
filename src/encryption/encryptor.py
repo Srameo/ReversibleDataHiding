@@ -31,10 +31,11 @@ class Encryptor:
                 self.Is[3][i, j] = self.src_img[2 * i, 2 * j]
 
     def error(self):
-        err1 = np.sum((self.PEs[1]) ** 2)
-        err2 = np.sum((self.PEs[2]) ** 2)
-        err3 = np.sum((self.PEs[3]) ** 2)
-        return (err1 + err2 + err3) / (self.H * self.W)
+        err = 0
+        for i in self.PEs:
+            err += np.sum(i ** 2)
+        l = len(self.PEs)
+        return err * l / (self.H * self.W * (l - 1))
 
     def predict(self):
         # 计算P
@@ -43,12 +44,14 @@ class Encryptor:
         self.__predict02()
         self.__predict03()
         # 计算 PE
-        for i in range(1, 4):
+        for i in range(4):
             self.PEs[i] = self.Ps[i] - self.Is[i]
-        self.PEs[0] = np.copy(self.Is[0])
         # 计算PEA, 同时嵌入location map
         for i in range(4):
-            self.PEAs[i] = np.copy(self.PEs[i])
+            if i > 0:
+                self.PEAs[i] = np.copy(self.PEs[i])
+            else:
+                self.PEAs[i] = np.copy(self.Is[i])
             self.PEAs[i][self.PEAs[i] < 0] = abs(self.PEAs[i][self.PEAs[i] < 0]) + 64
             self.PEAs[i][self.PEAs[i] > 64] = self.PEAs[i][self.PEAs[i] > 64] | 0b10000000
             self.PEAs[i][self.PEAs[i] < 64] = self.PEAs[i][self.PEAs[i] < 64] & 0b01111111
@@ -67,7 +70,7 @@ class Encryptor:
         self.Ps[1] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if i == h:
+                if j < w - 1:
                     self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i, j + 1])
                 else:
                     self.Ps[1][i, j] = I0[i, j]
@@ -78,7 +81,7 @@ class Encryptor:
         self.Ps[2] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if j == w:
+                if i < h - 1:
                     self.Ps[2][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
                 else:
                     self.Ps[2][i, j] = I0[i, j]
@@ -139,18 +142,9 @@ if __name__ == '__main__':
     e1.decomposition()
     e1.predict()
 
-    e2 = Encryptor(gray_lena, Encryptor.predict_method2)
-    e2.decomposition()
-    e2.predict()
-
     print(e1.error())
-    print(e2.error())
 
-    iu.print_imgs(e1.get_gull_img("I"),
-                  e1.get_gull_img("P"),
-                  e1.get_gull_img("PE"),
-                  e1.get_gull_img("PEA"),
-                  e2.get_gull_img("I"),
-                  e2.get_gull_img("P"),
-                  e2.get_gull_img("PE"),
-                  e2.get_gull_img("PEA"))
+    # iu.print_imgs(e1.get_gull_img("I"),
+    #               e1.get_gull_img("P"),
+    #               e1.get_gull_img("PE"),
+    #               e1.get_gull_img("PEA"))
