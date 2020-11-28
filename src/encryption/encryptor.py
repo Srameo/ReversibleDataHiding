@@ -20,6 +20,10 @@ class Encryptor:
             self.H, self.W = img.shape
 
     def decomposition(self):
+        """
+        将图片分解成4个部分
+        :return:
+        """
         h, w = int(self.H / 2), int(self.W / 2)
         for i in range(4):
             self.Is[i] = np.zeros((h, w), np.int)
@@ -31,6 +35,10 @@ class Encryptor:
                 self.Is[3][i, j] = self.src_img[2 * i, 2 * j]
 
     def error(self):
+        """
+        返回当前的误差
+        :return: 误差 min best
+        """
         err = 0
         for i in self.PEs:
             err += np.sum(i ** 2)
@@ -38,6 +46,10 @@ class Encryptor:
         return err * l / (self.H * self.W * (l - 1))
 
     def predict(self):
+        """
+        预测并嵌入location map
+        :return:
+        """
         # 计算P
         self.Ps[0] = self.Is[0]
         self.__predict01()
@@ -47,11 +59,9 @@ class Encryptor:
         for i in range(4):
             self.PEs[i] = self.Ps[i] - self.Is[i]
         # 计算PEA, 同时嵌入location map
-        for i in range(4):
-            if i > 0:
-                self.PEAs[i] = np.copy(self.PEs[i])
-            else:
-                self.PEAs[i] = np.copy(self.Is[i])
+        self.PEAs[0] = np.copy(self.Is[0])
+        for i in range(1, 4):
+            self.PEAs[i] = np.copy(self.PEs[i])
             self.PEAs[i][self.PEAs[i] < 0] = abs(self.PEAs[i][self.PEAs[i] < 0]) + 64
             self.PEAs[i][self.PEAs[i] > 64] = self.PEAs[i][self.PEAs[i] > 64] | 0b10000000
             self.PEAs[i][self.PEAs[i] < 64] = self.PEAs[i][self.PEAs[i] < 64] & 0b01111111
@@ -144,7 +154,7 @@ if __name__ == '__main__':
 
     print(e1.error())
 
-    # iu.print_imgs(e1.get_gull_img("I"),
-    #               e1.get_gull_img("P"),
-    #               e1.get_gull_img("PE"),
-    #               e1.get_gull_img("PEA"))
+    iu.print_imgs(e1.get_gull_img("I"),
+                  e1.get_gull_img("P"),
+                  e1.get_gull_img("PE"),
+                  e1.get_gull_img("PEA"))

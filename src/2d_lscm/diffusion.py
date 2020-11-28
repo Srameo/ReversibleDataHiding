@@ -2,8 +2,9 @@
 import numpy as np
 import permutation
 
+
 def row_diffusion(T, R, F, M, N):
-    '''
+    """
     行扩散
     Args:
         T: 置换结果矩阵
@@ -13,7 +14,7 @@ def row_diffusion(T, R, F, M, N):
         N: 矩阵列数
     Return:
         C: 行扩散结果
-    '''
+    """
     G = N
     C = np.zeros_like(T)
     for i in range(G):
@@ -28,8 +29,9 @@ def row_diffusion(T, R, F, M, N):
 
     return C
 
+
 def column_diffusion(T, R, F, M, N):
-    '''
+    """
     列扩散
     Args:
         T: 置换结果矩阵
@@ -39,7 +41,7 @@ def column_diffusion(T, R, F, M, N):
         N: 矩阵列数
     Return:
         C: 列扩散结果
-    '''
+    """
     G = M
     C = np.zeros_like(T)
     for i in range(G):
@@ -53,6 +55,7 @@ def column_diffusion(T, R, F, M, N):
             C[i][m] = tmp[m]
 
     return C
+
 
 if __name__ == "__main__":
     T = permutation.permutation()
