@@ -22,6 +22,7 @@ class Encryptor:
         self.PEs = []
         self.PE_stars = []
         self.PEAs = []
+        # self.LM = np.zeros(img.shape, np.bool)
         self.src_img = img
         if predict is None:
             self.predict_method = Encryptor.predict_method1
@@ -74,7 +75,7 @@ class Encryptor:
         for i in range(1, 4):
             self.PE_stars.append(np.copy(self.PEs[i]))
             self.PE_stars[i][self.PE_stars[i] < 0] = abs(self.PE_stars[i][self.PE_stars[i] < 0]) + 64
-        # 计算PEA, 同时嵌入location map
+        # 计算PEA
         self.PEAs.append(np.copy(self.PE_stars[0]))
         for i in range(1, 4):
             self.PEAs.append(np.copy(self.PE_stars[i]))
@@ -158,6 +159,10 @@ class Encryptor:
         return res.astype(np.uint8)
 
     def recomposition(self):
+        """
+        将图片还原成本身的样子
+        :return: self.res_img
+        """
         self.res_img = np.zeros((self.H, self.W), np.uint8)
         h, w = int(self.H / 2), int(self.W / 2)
         for i in range(h):
@@ -191,5 +196,5 @@ if __name__ == '__main__':
 
     print(e1.error())
 
-    iu.print_imgs(e1.recomposition())
+    # iu.print_imgs(e1.recomposition())
     # __test()
