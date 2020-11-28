@@ -4,13 +4,24 @@ import src.util.path_util as pu
 import math
 
 
+__TEST_IMAGE = np.array([[97, 97, 114, 162, 189, 180, 187, 192],
+                         [87, 119, 123, 156, 174, 182, 184, 189],
+                         [76, 117, 135, 162, 169, 173, 178, 191],
+                         [54, 96, 116, 161, 161, 159, 171, 179],
+                         [59, 81, 96, 142, 146, 152, 160, 169],
+                         [70, 68, 76, 97, 125, 143, 132, 142],
+                         [91, 54, 69, 65, 99, 135, 112, 118],
+                         [128, 55, 64, 68, 72, 123, 135, 109]])
+
+
 class Encryptor:
 
     def __init__(self, img: np.ndarray = None, predict=None):
-        self.Is = [None] * 4
+        self.Is = []
         self.Ps = [None] * 4
-        self.PEs = [None] * 4
-        self.PEAs = [None] * 4
+        self.PEs = []
+        self.PE_stars = []
+        self.PEAs = []
         self.src_img = img
         if predict is None:
             self.predict_method = Encryptor.predict_method1
@@ -26,13 +37,13 @@ class Encryptor:
         """
         h, w = int(self.H / 2), int(self.W / 2)
         for i in range(4):
-            self.Is[i] = np.zeros((h, w), np.int)
+            self.Is.append(np.zeros((h, w), np.int))
         for i in range(h):
             for j in range(w):
-                self.Is[0][i, j] = self.src_img[2 * i - 1, 2 * j - 1]
-                self.Is[1][i, j] = self.src_img[2 * i - 1, 2 * j]
-                self.Is[2][i, j] = self.src_img[2 * i, 2 * j - 1]
-                self.Is[3][i, j] = self.src_img[2 * i, 2 * j]
+                self.Is[0][i, j] = self.src_img[2 * i, 2 * j]
+                self.Is[1][i, j] = self.src_img[2 * i, 2 * j + 1]
+                self.Is[2][i, j] = self.src_img[2 * i + 1, 2 * j]
+                self.Is[3][i, j] = self.src_img[2 * i + 1, 2 * j + 1]
 
     def error(self):
         """
@@ -57,14 +68,18 @@ class Encryptor:
         self.__predict03()
         # 计算 PE
         for i in range(4):
-            self.PEs[i] = self.Ps[i] - self.Is[i]
-        # 计算PEA, 同时嵌入location map
-        self.PEAs[0] = np.copy(self.Is[0])
+            # self.PEs[i] = self.Ps[i] - self.Is[i]
+            self.PEs.append(self.Is[i] - self.Ps[i])
+        self.PE_stars.append(np.copy(self.Is[0]))
         for i in range(1, 4):
-            self.PEAs[i] = np.copy(self.PEs[i])
-            self.PEAs[i][self.PEAs[i] < 0] = abs(self.PEAs[i][self.PEAs[i] < 0]) + 64
-            self.PEAs[i][self.PEAs[i] > 64] = self.PEAs[i][self.PEAs[i] > 64] | 0b10000000
-            self.PEAs[i][self.PEAs[i] < 64] = self.PEAs[i][self.PEAs[i] < 64] & 0b01111111
+            self.PE_stars.append(np.copy(self.PEs[i]))
+            self.PE_stars[i][self.PE_stars[i] < 0] = abs(self.PE_stars[i][self.PE_stars[i] < 0]) + 64
+        # 计算PEA, 同时嵌入location map
+        self.PEAs.append(np.copy(self.PE_stars[0]))
+        for i in range(1, 4):
+            self.PEAs.append(np.copy(self.PE_stars[i]))
+            # self.PEAs[i][self.PE_stars[i] > 64] = self.PEAs[i][self.PE_stars[i] > 64] | 0b10000000
+            # self.PEAs[i][self.PE_stars[i] < 64] = self.PEAs[i][self.PE_stars[i] < 64] & 0b01111111
 
     @staticmethod
     def predict_method1(a, b):
@@ -80,8 +95,8 @@ class Encryptor:
         self.Ps[1] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if j < w - 1:
-                    self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i, j + 1])
+                if i < h - 1:
+                    self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
                 else:
                     self.Ps[1][i, j] = I0[i, j]
 
@@ -91,8 +106,8 @@ class Encryptor:
         self.Ps[2] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if i < h - 1:
-                    self.Ps[2][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
+                if j < w - 1:
+                    self.Ps[2][i, j] = self.predict_method(I0[i, j + 1], I0[i, j])
                 else:
                     self.Ps[2][i, j] = I0[i, j]
 
@@ -132,6 +147,8 @@ class Encryptor:
             arr = self.PEs
         elif imgs == "P":
             arr = self.Ps
+        elif imgs == "PEstar":
+            arr = self.PE_stars
         else:
             arr = self.Is
         res[0:h, 0:w] = arr[0]
@@ -145,12 +162,20 @@ class Encryptor:
         h, w = int(self.H / 2), int(self.W / 2)
         for i in range(h):
             for j in range(w):
-                self.res_img[2 * i - 1, 2 * j - 1] = self.PEAs[0][i, j]
-                self.res_img[2 * i - 1, 2 * j] = self.PEAs[1][i, j]
-                self.res_img[2 * i, 2 * j - 1] = self.PEAs[2][i, j]
-                self.res_img[2 * i, 2 * j] = self.PEAs[3][i, j]
+                self.res_img[2 * i, 2 * j] = self.PEAs[0][i, j]
+                self.res_img[2 * i, 2 * j + 1] = self.PEAs[1][i, j]
+                self.res_img[2 * i + 1, 2 * j] = self.PEAs[2][i, j]
+                self.res_img[2 * i + 1, 2 * j + 1] = self.PEAs[3][i, j]
         return self.res_img
 
+
+def __test():
+    e = Encryptor(__TEST_IMAGE, Encryptor.predict_method1)
+    e.decomposition()
+    e.predict()
+    e.recomposition()
+    iu.print_imgs(e.recomposition())
+    pass
 
 
 if __name__ == '__main__':
@@ -166,4 +191,5 @@ if __name__ == '__main__':
 
     print(e1.error())
 
-    iu.print_imgs(e1.recomposition().astype(np.uint8))
+    iu.print_imgs(e1.recomposition())
+    # __test()

@@ -1,6 +1,6 @@
 # 使用permutation.py文件中得到的矩阵T和混沌矩阵R进行扩散操作
 import numpy as np
-import permutation
+from src.lscm_2d import permutation
 
 
 def row_diffusion(T, R, F, M, N):
