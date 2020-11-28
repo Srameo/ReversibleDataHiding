@@ -2,7 +2,7 @@ import numpy as np
 import src.util.image_util as iu
 import src.util.path_util as pu
 import math
-
+from src.encryption_2d_lscm import InitialStateGeneration, diffusion, permutation
 
 __TEST_IMAGE = np.array([[97, 97, 114, 162, 189, 180, 187, 192],
                          [87, 119, 123, 156, 174, 182, 184, 189],
@@ -157,6 +157,12 @@ class Encryptor:
         res[h:self.H, 0:w] = arr[2]
         res[h:self.H, w:self.W] = arr[2]
         return res.astype(np.uint8)
+
+    def encryption(self):
+        M, N = self.src_img.shape
+        P = self.res_img
+        init_matixs = InitialStateGeneration.init_confusion_matrix(M, N, P)
+
 
     def recomposition(self):
         """
