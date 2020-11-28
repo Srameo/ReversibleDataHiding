@@ -17,7 +17,7 @@ P = np.array([[1, 5, 9, 13, 17],
               [4, 8, 12, 16, 20]])
 
 
-def permutation():
+def permutation(S, P, M, N):
     # 对S的每一列进行排序并获得索引矩阵O
     O = np.zeros((M, N))
     for j in range(N):
@@ -51,4 +51,4 @@ def permutation():
 
 
 if __name__ == "__main__":
-    t = permutation()
+    t = permutation(S, P, M, N)

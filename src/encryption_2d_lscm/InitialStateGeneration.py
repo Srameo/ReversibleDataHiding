@@ -74,7 +74,7 @@ def init_states(k):
     return initialStates
 
 
-def init_confusion_matix(M, N, initialStates):
+def init_confusion_matrix(M, N, initialStates):
     init_matixs = [None] * 4
     for i in range(0, 4):
         init_matixs[i] = numpy.zeros((M, N))
@@ -89,4 +89,4 @@ def init_confusion_matix(M, N, initialStates):
 
 if __name__ == "__main__":
     print(init_states(secretKey))
-    print(init_confusion_matix(20, 30, init_states(secretKey)))
+    print(init_confusion_matrix(20, 30, init_states(secretKey)))

@@ -58,7 +58,7 @@ def column_diffusion(T, R, F, M, N):
 
 
 if __name__ == "__main__":
-    T = permutation.permutation()
+    T = permutation.permutation(S, P, M, N)
     R = permutation.S
     F = 30
     M = permutation.M
