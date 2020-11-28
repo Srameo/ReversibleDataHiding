@@ -20,7 +20,7 @@ def row_diffusion(T, R, F, M, N):
     for i in range(G):
         if i == 0:
             tmp = (T[:, 0] + T[:, G - 1] + T[:, G - 2] + np.floor(R[:, i] * (2 ** 32))) % F
-        elif i == 2:
+        elif i == 1:
             tmp = (T[:, 1] + C[:, 0] + T[:, G - 1] + np.floor(R[:, i] * (2 ** 32))) % F
         else:
             tmp = (T[:, i] + C[:, i - 1] + C[:, i - 2] + np.floor(R[:, i] * (2 ** 32))) % F
