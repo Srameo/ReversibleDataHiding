@@ -31,7 +31,7 @@ def row_diffusion(T, R, F, M, N):
 
 
 def column_diffusion(T, R, F, M, N):
-    '''
+    """
     列扩散
     Args:
         T: 置换结果矩阵
@@ -41,7 +41,7 @@ def column_diffusion(T, R, F, M, N):
         N: 矩阵列数
     Return:
         C: 列扩散结果
-    '''
+    """
     G = M
     C = np.zeros_like(T)
     for i in range(G):
