@@ -1,4 +1,5 @@
 import math
+import numpy
 
 secretKey = {
     "x0": [1] * 13 + [0] * 13 + [1] * 13 + [0] * 13,
@@ -73,5 +74,19 @@ def init_states(k):
     return initialStates
 
 
+def init_confusion_matrix(M, N, initialStates):
+    init_matixs = [None] * 4
+    for i in range(0, 4):
+        init_matixs[i] = numpy.zeros((M, N))
+    for k in range(0, 4):
+        for i in range(0, M):
+            for j in range(0, N):
+                temp_x, temp_y = _2D_LSCM(*initialStates[k])
+                init_matixs[k][i][j] = (temp_x + temp_y) / 2
+                initialStates[k] = (temp_x, temp_y, initialStates[k][2])
+    return init_matixs
+
+
 if __name__ == "__main__":
     print(init_states(secretKey))
+    print(init_confusion_matrix(20, 30, init_states(secretKey)))
