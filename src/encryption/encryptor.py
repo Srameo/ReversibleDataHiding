@@ -140,6 +140,18 @@ class Encryptor:
         res[h:self.H, w:self.W] = arr[2]
         return res.astype(np.uint8)
 
+    def recomposition(self):
+        self.res_img = np.zeros((self.H, self.W), np.uint8)
+        h, w = int(self.H / 2), int(self.W / 2)
+        for i in range(h):
+            for j in range(w):
+                self.res_img[2 * i - 1, 2 * j - 1] = self.PEAs[0][i, j]
+                self.res_img[2 * i - 1, 2 * j] = self.PEAs[1][i, j]
+                self.res_img[2 * i, 2 * j - 1] = self.PEAs[2][i, j]
+                self.res_img[2 * i, 2 * j] = self.PEAs[3][i, j]
+        return self.res_img
+
+
 
 if __name__ == '__main__':
     root_path = pu.get_root_path()
@@ -154,7 +166,4 @@ if __name__ == '__main__':
 
     print(e1.error())
 
-    iu.print_imgs(e1.get_gull_img("I"),
-                  e1.get_gull_img("P"),
-                  e1.get_gull_img("PE"),
-                  e1.get_gull_img("PEA"))
+    iu.print_imgs(e1.recomposition().astype(np.uint8))
