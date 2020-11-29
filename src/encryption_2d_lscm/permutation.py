@@ -3,21 +3,8 @@
 
 import numpy as np
 
-M = 4
-N = 5
 
-S = np.array([[0.96, 0.50, 0.08, 0.75, 0.97],
-              [0.44, 0.05, 0.84, 0.72, 0.33],
-              [0.06, 0.68, 0.99, 0.58, 0.38],
-              [0.70, 0.45, 0.07, 0.12, 0.18]])
-
-P = np.array([[1, 5, 9, 13, 17],
-              [2, 6, 10, 14, 18],
-              [3, 7, 11, 15, 19],
-              [4, 8, 12, 16, 20]])
-
-
-def permutation():
+def permutation(P, S, M, N):
     # 对S的每一列进行排序并获得索引矩阵O
     O = np.zeros((M, N))
     for j in range(N):
@@ -45,10 +32,6 @@ def permutation():
             tmpP.append(P[int(PM[i][j][0])][int(PM[i][j][1])])
         tmpS = sorted(tmpS, key=lambda x: x[0])
         for m in range(N):
-            T[int(PM[i][m][0])][int(PM[i][m][1])] = tmpP[tmpS[m][1]]
-
+            T[int(PM[i][m][0])][int(PM[i][m][1])] = int(tmpP[tmpS[m][1]])
     return T
 
-
-if __name__ == "__main__":
-    t = permutation()

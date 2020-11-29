@@ -88,5 +88,5 @@ def init_confusion_matix(M, N, initialStates):
 
 
 if __name__ == "__main__":
-    print(init_states(secretKey))
-    print(init_confusion_matix(20, 30, init_states(secretKey)))
+
+    init_confusion_matix(20, 30, init_states(secretKey))
