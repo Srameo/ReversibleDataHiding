@@ -2,7 +2,7 @@ import numpy as np
 import src.util.image_util as iu
 import src.util.path_util as pu
 import math
-from src.encryption_2d_lscm import InitialStateGeneration, diffusion, permutation
+import src.util.encrypt_util as eu
 
 __TEST_IMAGE = np.array([[97, 97, 114, 162, 189, 180, 187, 192],
                          [87, 119, 123, 156, 174, 182, 184, 189],
@@ -159,10 +159,8 @@ class Encryptor:
         return res.astype(np.uint8)
 
     def encryption(self):
-        M, N = self.src_img.shape
-        P = self.res_img
-        init_matixs = InitialStateGeneration.init_confusion_matrix(M, N, P)
-
+        self.encrypted_I = eu.encrypt(self.res_img, eu.SECRET_KEY, 256)
+        return self.encrypted_I
 
     def recomposition(self):
         """
@@ -185,22 +183,23 @@ def __test():
     e.decomposition()
     e.predict()
     e.recomposition()
-    iu.print_imgs(e.recomposition())
+    e.encryption()
+    iu.print_imgs(e.encrypted_I.astype(np.uint8))
     pass
 
 
 if __name__ == '__main__':
-    root_path = pu.get_root_path()
-    file_name = "200px-Lenna.jpg"
-    file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
-
-    gray_lena = iu.read_img(file_path, iu.READ_GRAY)
-
-    e1 = Encryptor(gray_lena, Encryptor.predict_method1)
-    e1.decomposition()
-    e1.predict()
-
-    print(e1.error())
+    # root_path = pu.get_root_path()
+    # file_name = "200px-Lenna.jpg"
+    # file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
+    #
+    # gray_lena = iu.read_img(file_path, iu.READ_GRAY)
+    #
+    # e1 = Encryptor(gray_lena, Encryptor.predict_method1)
+    # e1.decomposition()
+    # e1.predict()
+    #
+    # print(e1.error())
 
     # iu.print_imgs(e1.recomposition())
-    # __test()
+    __test()
