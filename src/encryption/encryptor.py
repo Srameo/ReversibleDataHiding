@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import src.util.image_util as iu
 import src.util.path_util as pu
@@ -22,7 +23,8 @@ class Encryptor:
         self.PEs = []
         self.PE_stars = []
         self.PEAs = []
-        # self.LM = np.zeros(img.shape, np.bool)
+        self.raw_LM = []
+        # self.raw_LM = np.zeros(img.shape, np.bool)
         self.src_img = img
         if predict is None:
             self.predict_method = Encryptor.predict_method1
@@ -77,8 +79,12 @@ class Encryptor:
             self.PE_stars[i][self.PE_stars[i] < 0] = abs(self.PE_stars[i][self.PE_stars[i] < 0]) + 64
         # 计算PEA
         self.PEAs.append(np.copy(self.PE_stars[0]))
+        self.raw_LM.append(np.zeros(self.PEAs[0].shape, np.bool))
         for i in range(1, 4):
             self.PEAs.append(np.copy(self.PE_stars[i]))
+            temp = np.zeros(self.Is[i].shape, np.bool)
+            temp[self.PE_stars[i] < 64] = 1
+            self.raw_LM.append(temp)
             # self.PEAs[i][self.PE_stars[i] > 64] = self.PEAs[i][self.PE_stars[i] > 64] | 0b10000000
             # self.PEAs[i][self.PE_stars[i] < 64] = self.PEAs[i][self.PE_stars[i] < 64] & 0b01111111
 
@@ -160,7 +166,40 @@ class Encryptor:
 
     def encryption(self):
         self.encrypted_I = eu.encrypt(self.res_img, eu.SECRET_KEY, 256)
+        self.encrypted_LM = eu.encrypt(self.LM, eu.SECRET_KEY, 256)
         return self.encrypted_I
+
+    def max_length(self):
+        """
+        返回最多可以插入的长度
+        :return:
+        """
+        return np.sum(self.LM)
+
+    def data_hider(self, data: int):
+        i, j, k = 0, 0, 0
+        self.ans = np.copy(self.encrypted_I)
+        l = data.bit_length()
+        while i < self.H:
+            while j < self.W:
+                if self.LM[i, j]:
+                    data_k = data & 0b1
+                    self.ans[i, j] = self.ans[i, j] % 128 + data_k * 128
+                    data >>= 1
+                    k += 1
+                j += 1
+            i, j = i + 1, 0
+        if k < l:
+            print("too many data!")
+
+    def save(self, pth: str):
+        """
+        将LM和加密后的图片存储到路径中
+        :param pth: 存储的路径
+        :return:
+        """
+        iu.save_img(self.ans, pu.path_join(pth, "image.png"))
+        iu.save_img(self.encrypted_LM, pu.path_join(pth, "LM.png"))
 
     def recomposition(self):
         """
@@ -168,6 +207,7 @@ class Encryptor:
         :return: self.res_img
         """
         self.res_img = np.zeros((self.H, self.W), np.uint8)
+        self.LM = np.zeros((self.H, self.W), np.bool)
         h, w = int(self.H / 2), int(self.W / 2)
         for i in range(h):
             for j in range(w):
@@ -175,25 +215,34 @@ class Encryptor:
                 self.res_img[2 * i, 2 * j + 1] = self.PEAs[1][i, j]
                 self.res_img[2 * i + 1, 2 * j] = self.PEAs[2][i, j]
                 self.res_img[2 * i + 1, 2 * j + 1] = self.PEAs[3][i, j]
+                self.LM[2 * i, 2 * j] = self.raw_LM[0][i, j]
+                self.LM[2 * i, 2 * j + 1] = self.raw_LM[1][i, j]
+                self.LM[2 * i + 1, 2 * j] = self.raw_LM[2][i, j]
+                self.LM[2 * i + 1, 2 * j + 1] = self.raw_LM[3][i, j]
         return self.res_img
 
 
-def __test():
-    e = Encryptor(__TEST_IMAGE, Encryptor.predict_method1)
+def __test(file):
+    e = Encryptor(file, Encryptor.predict_method1)
     e.decomposition()
     e.predict()
     e.recomposition()
     e.encryption()
-    iu.print_imgs(e.encrypted_I.astype(np.uint8))
+    print(e.max_length())
+    e.data_hider(0b10000100000110001111111011100001000001100011111110111000010000011000111111101110000100000110001111111011)
+    root_path = pu.get_root_path()
+    out = pu.path_join(root_path, pu.OUTPUT_PATH)
+    e.save(out)
+    iu.print_imgs(e.ans.astype(np.uint8), e.encrypted_LM.astype(np.uint8))
     pass
 
 
 if __name__ == '__main__':
-    # root_path = pu.get_root_path()
-    # file_name = "200px-Lenna.jpg"
-    # file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
-    #
-    # gray_lena = iu.read_img(file_path, iu.READ_GRAY)
+    root_path = pu.get_root_path()
+    file_name = "200px-Lenna.jpg"
+    file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
+
+    gray_lena = iu.read_img(file_path, iu.READ_GRAY)
     #
     # e1 = Encryptor(gray_lena, Encryptor.predict_method1)
     # e1.decomposition()
@@ -202,4 +251,4 @@ if __name__ == '__main__':
     # print(e1.error())
 
     # iu.print_imgs(e1.recomposition())
-    __test()
+    __test(gray_lena)
