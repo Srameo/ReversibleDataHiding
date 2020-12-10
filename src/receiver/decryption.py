@@ -1,7 +1,7 @@
 import numpy
 import math
 
-from src.encryption_2d_lscm.InitialStateGeneration import init_confusion_matix, init_states
+from src.encryption_2d_lscm.InitialStateGeneration import init_confusion_matrix, init_states
 
 # 测试数据
 '''
@@ -11,17 +11,7 @@ from src.encryption_2d_lscm.InitialStateGeneration import init_confusion_matix, 
 F
 
 '''
-M = 4
-N = 5
-F = 256
-res = numpy.array([[7, 5, 2, 17, 11],
-                   [9, 3, 4, 14, 15],
-                   [6, 13, 1, 8, 10],
-                   [19, 18, 12, 16, 20]])
-S = numpy.array([[0.96, 0.50, 0.08, 0.75, 0.97],
-                 [0.44, 0.05, 0.84, 0.72, 0.33],
-                 [0.06, 0.68, 0.99, 0.58, 0.38],
-                 [0.70, 0.45, 0.07, 0.12, 0.18]])
+
 secretKey = {
     "x0": [1] * 13 + [0] * 13 + [1] * 13 + [0] * 13,
     "y0": [0] * 13 + [1] * 13 + [0] * 13 + [1] * 13,
@@ -31,11 +21,6 @@ secretKey = {
     "a3": [1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1],
     "a4": [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1]
 }
-
-
-def get_LM(res, M, N):
-    pass
-
 
 def reverse_row_diffusion(C, init_matix, F, M, N):
     """
@@ -51,11 +36,11 @@ def reverse_row_diffusion(C, init_matix, F, M, N):
     res = numpy.zeros_like(C)
     for i in range(G):
         if i >= 2:
-            tmp = (C[:, i] - C[:, i - 1] - C[:, i - 2] + numpy.floor(init_matix[:, i] * (2 ** 32))) % F
+            tmp = (C[:, i] - C[:, i - 1] - C[:, i - 2] - numpy.floor(init_matix[:, i] * (2 ** 32))) % F
         elif i == 1:
-            tmp = (C[:, 1] - C[:, 0] - res[:, G - 1] + numpy.floor(init_matix[:, i] * (2 ** 32))) % F
+            tmp = (C[:, 1] - C[:, 0] - res[:, G - 1] - numpy.floor(init_matix[:, i] * (2 ** 32))) % F
         else:
-            tmp = (C[:, 0] + res[:, G - 1] + res[:, G - 2] + numpy.floor(init_matix[:, i] * (2 ** 32))) % F
+            tmp = (C[:, 0] + res[:, G - 1] + res[:, G - 2] - numpy.floor(init_matix[:, i] * (2 ** 32))) % F
 
         for m in range(M):
             res[m][i] = tmp[m]
@@ -77,11 +62,11 @@ def reverse_col_diffusion(C, init_matix, F, M, N):
     res = numpy.zeros_like(C)
     for i in range(G):
         if i >= 2:
-            tmp = (C[i] - C[i - 1] - C[- 2] + numpy.floor(init_matix[i] * (2 ** 32))) % F
+            tmp = (C[i] - C[i - 1] - C[i- 2] - numpy.floor(init_matix[i] * (2 ** 32))) % F
         elif i == 1:
-            tmp = (C[1] - C[0] - res[G - 1] + numpy.floor(init_matix[i] * (2 ** 32))) % F
+            tmp = (C[1] - C[0] - res[G - 1] - numpy.floor(init_matix[i] * (2 ** 32))) % F
         else:
-            tmp = (C[0] + res[G - 1] + res[G - 2] + numpy.floor(init_matix[i] * (2 ** 32))) % F
+            tmp = (C[0] + res[G - 1] + res[G - 2] - numpy.floor(init_matix[i] * (2 ** 32))) % F
 
         for m in range(N):
             res[i][m] = tmp[m]
@@ -146,12 +131,23 @@ def reverse_permutation(T, init_matix, M, N):
     return res
 
 
-if __name__ == "__main__":
-    init_matixs = [None] * 4
-    init_matixs = init_confusion_matix(M, N, init_states(secretKey))
+def decryptioner(res, S, F):
+    """
+
+    Args:
+        res: 输入矩阵
+        S: 密钥
+        F: pixel
+
+    Returns:解密后的矩阵
+
+    """
+    global C2
+    M, N = res.shape
+    init_matixs = init_confusion_matrix(M, N, init_states(S))
     # 取出LM
-    get_LM(res, M, N)
     for i in range(0, 4):
         # 反向扩散
-        res = reverse_diffusion(res, init_matixs[i], F, M, N)
-        res = reverse_permutation(res,init_matixs[i],M, N)
+        C1 = reverse_diffusion(res, init_matixs[i], F, M, N)
+        C2 = reverse_permutation(C1, init_matixs[i], M, N)
+    return C2

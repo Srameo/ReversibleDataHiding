@@ -1,9 +1,9 @@
-import cv2
 import numpy as np
 import src.util.image_util as iu
 import src.util.path_util as pu
 import math
 import src.util.encrypt_util as eu
+import src.receiver.decryption as dec
 
 __TEST_IMAGE = np.array([[97, 97, 114, 162, 189, 180, 187, 192],
                          [87, 119, 123, 156, 174, 182, 184, 189],
@@ -167,6 +167,8 @@ class Encryptor:
     def encryption(self):
         self.encrypted_I = eu.encrypt(self.res_img, eu.SECRET_KEY, 256)
         self.encrypted_LM = eu.encrypt(self.LM, eu.SECRET_KEY, 256)
+        print(self.res_img)
+        print(self.LM)
         return self.encrypted_I
 
     def max_length(self):
@@ -180,6 +182,7 @@ class Encryptor:
         i, j, k = 0, 0, 0
         self.ans = np.copy(self.encrypted_I)
         l = data.bit_length()
+        # print(l)
         while i < self.H:
             while j < self.W:
                 if self.LM[i, j]:
@@ -187,6 +190,8 @@ class Encryptor:
                     self.ans[i, j] = self.ans[i, j] % 128 + data_k * 128
                     data >>= 1
                     k += 1
+                    if k >= l:
+                        return
                 j += 1
             i, j = i + 1, 0
         if k < l:
@@ -199,7 +204,8 @@ class Encryptor:
         :return:
         """
         iu.save_img(self.ans, pu.path_join(pth, "image.png"))
-        iu.save_img(self.encrypted_LM, pu.path_join(pth, "LM.png"))
+        # iu.save_img(self.encrypted_LM, pu.path_join(pth, "LM.png"))
+        iu.save_img(self.LM.astype(np.uint8), pu.path_join(pth, "LM.png"))
 
     def recomposition(self):
         """
@@ -229,11 +235,17 @@ def __test(file):
     e.recomposition()
     e.encryption()
     print(e.max_length())
-    e.data_hider(0b10000100000110001111111011100001000001100011111110111000010000011000111111101110000100000110001111111011)
+    e.data_hider(0b11000100000110001111111011100001000001100011111110111000010000011000111111101110000100000110001111111011)
     root_path = pu.get_root_path()
     out = pu.path_join(root_path, pu.OUTPUT_PATH)
     e.save(out)
-    iu.print_imgs(e.ans.astype(np.uint8), e.encrypted_LM.astype(np.uint8))
+    # lm = dec.decryptioner(e.encrypted_LM, dec.secretKey, 256)
+    # diff = e.LM.astype(np.int) - lm.astype(np.int)
+    # i = dec.decryptioner(e.encrypted_I, dec.secretKey, 256)
+    # diff_I = i - e.res_img
+    # print(np.sum(abs(diff)))
+    # print(np.sum(abs(diff_I)))
+    # iu.print_imgs(e.ans.astype(np.uint8), e.encrypted_LM.astype(np.uint8))
     pass
 
 
@@ -251,4 +263,4 @@ if __name__ == '__main__':
     # print(e1.error())
 
     # iu.print_imgs(e1.recomposition())
-    __test(gray_lena)
+    __test(__TEST_IMAGE)

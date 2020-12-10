@@ -3,6 +3,7 @@ import os
 PROJECT_NAME = "ReversibleDataHiding"
 INPUT_PATH = "static" + os.sep + "input"
 OUTPUT_PATH = "static" + os.sep + "output"
+REC_PATH = "static" + os.sep + "reconstruction"
 
 
 def get_root_path() -> str:
