@@ -165,7 +165,7 @@ class Encryptor:
         return res.astype(np.uint8)
 
     def encryption(self):
-        self.encrypted_I = eu.encrypt(self.res_img, eu.SECRET_KEY, 256)
+        self.encrypted_I = eu.encrypt(self.ans, eu.SECRET_KEY, 256)
         self.encrypted_LM = eu.encrypt(self.LM, eu.SECRET_KEY, 256)
         print(self.res_img)
         print(self.LM)
@@ -180,7 +180,7 @@ class Encryptor:
 
     def data_hider(self, data: int):
         i, j, k = 0, 0, 0
-        self.ans = np.copy(self.encrypted_I)
+        self.ans = np.copy(self.res_img)
         l = data.bit_length()
         # print(l)
         while i < self.H:
@@ -203,9 +203,9 @@ class Encryptor:
         :param pth: 存储的路径
         :return:
         """
-        iu.save_img(self.ans, pu.path_join(pth, "image.png"))
-        # iu.save_img(self.encrypted_LM, pu.path_join(pth, "LM.png"))
-        iu.save_img(self.LM.astype(np.uint8), pu.path_join(pth, "LM.png"))
+        iu.save_img(self.encrypted_I, pu.path_join(pth, "image.png"))
+        iu.save_img(self.encrypted_LM, pu.path_join(pth, "LM.png"))
+        # iu.save_img(self.LM.astype(np.uint8), pu.path_join(pth, "LM.png"))
 
     def recomposition(self):
         """
@@ -233,9 +233,9 @@ def __test(file):
     e.decomposition()
     e.predict()
     e.recomposition()
-    e.encryption()
     print(e.max_length())
     e.data_hider(0b11000100000110001111111011100001000001100011111110111000010000011000111111101110000100000110001111111011)
+    e.encryption()
     root_path = pu.get_root_path()
     out = pu.path_join(root_path, pu.OUTPUT_PATH)
     e.save(out)
@@ -263,4 +263,4 @@ if __name__ == '__main__':
     # print(e1.error())
 
     # iu.print_imgs(e1.recomposition())
-    __test(__TEST_IMAGE)
+    __test(gray_lena)

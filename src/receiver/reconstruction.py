@@ -10,7 +10,8 @@ class Receiver:
 
     def __init__(self, img: np.ndarray = None, LM: np.ndarray = None, predict = None):
         self.encrypted_img = img
-        self.LM = LM
+        self.encrypted_LM = LM
+        self.LM = []
         self.PE_stars = []
         self.PEAs = []
         self.PEAs_whole = []
@@ -33,7 +34,7 @@ class Receiver:
         """
         i, j, length = 0, 0, 0
         self.data = int(0)
-        self.ans = np.copy(self.encrypted_img)
+        self.ans = np.copy(self.decrypted_img)
         while i < self.H:
             while j < self.W:
                 if self.LM[i, j] == 1:
@@ -52,7 +53,8 @@ class Receiver:
             i, j = i + 1, 0
 
     def decryption(self):
-        self.decrypted_img = dec.decryptioner(self.ans, eu.SECRET_KEY, 256).astype(np.uint8)
+        self.decrypted_img = dec.decryptioner(self.encrypted_img, eu.SECRET_KEY, 256).astype(np.uint8)
+        self.LM = dec.decryptioner(self.encrypted_LM, eu.SECRET_KEY, 256).astype(np.uint8)
         # print(self.img)
         # en_test_img = eu.encrypt(self.img, eu.SECRET_KEY, 256)
         # print(en_test_img)
@@ -68,7 +70,7 @@ class Receiver:
         Returns:
         """
         #先还原正负号得到PEE
-        self.PEE = self.decrypted_img.copy().astype(np.int)
+        self.PEE = self.ans.copy().astype(np.int)
         i, j = 0, 0
         while i < self.H:
             while j < self.W:
@@ -202,8 +204,8 @@ class Receiver:
 
 def __test(img, LM):
     e = Receiver(img, LM)
-    e.data_extraction()
     e.decryption()
+    e.data_extraction()
     e.recomposition()
 
 if __name__ == '__main__':
