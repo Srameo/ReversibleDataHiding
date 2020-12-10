@@ -34,13 +34,13 @@ def reverse_row_diffusion(C, init_matix, F, M, N):
         """
     G = N
     res = numpy.zeros_like(C)
-    for i in range(G):
+    for i in range(G-1,-1,-1):
         if i >= 2:
             tmp = (C[:, i] - C[:, i - 1] - C[:, i - 2] - numpy.floor(init_matix[:, i] * (2 ** 32))) % F
         elif i == 1:
             tmp = (C[:, 1] - C[:, 0] - res[:, G - 1] - numpy.floor(init_matix[:, i] * (2 ** 32))) % F
         else:
-            tmp = (C[:, 0] + res[:, G - 1] + res[:, G - 2] - numpy.floor(init_matix[:, i] * (2 ** 32))) % F
+            tmp = (C[:, 0] - res[:, G - 1] - res[:, G - 2] - numpy.floor(init_matix[:, i] * (2 ** 32))) % F
 
         for m in range(M):
             res[m][i] = tmp[m]
@@ -60,13 +60,13 @@ def reverse_col_diffusion(C, init_matix, F, M, N):
         """
     G = M
     res = numpy.zeros_like(C)
-    for i in range(G):
+    for i in range(G-1,-1,-1):
         if i >= 2:
             tmp = (C[i] - C[i - 1] - C[i- 2] - numpy.floor(init_matix[i] * (2 ** 32))) % F
         elif i == 1:
             tmp = (C[1] - C[0] - res[G - 1] - numpy.floor(init_matix[i] * (2 ** 32))) % F
         else:
-            tmp = (C[0] + res[G - 1] + res[G - 2] - numpy.floor(init_matix[i] * (2 ** 32))) % F
+            tmp = (C[0] - res[G - 1] - res[G - 2] - numpy.floor(init_matix[i] * (2 ** 32))) % F
 
         for m in range(N):
             res[i][m] = tmp[m]
@@ -127,7 +127,7 @@ def reverse_permutation(T, init_matix, M, N):
                 if tmpS[l][1] == k:
                     tempS.append(l)
         for m in range(N):
-            res[int(PM[i][m][0])][int(PM[i][m][1])] = tmpP[tempS[m]]
+            res[int(PM[i][m][0])][int(PM[i][m][1])] = int(tmpP[tempS[m]])
     return res
 
 
@@ -142,12 +142,11 @@ def decryptioner(res, S, F):
     Returns:解密后的矩阵
 
     """
-    global C2
     M, N = res.shape
     init_matixs = init_confusion_matrix(M, N, init_states(S))
     # 取出LM
-    for i in range(0, 4):
+    for i in range(3, -1,-1):
         # 反向扩散
-        C1 = reverse_diffusion(res, init_matixs[i], F, M, N)
-        C2 = reverse_permutation(C1, init_matixs[i], M, N)
-    return C2
+        res = reverse_diffusion(res, init_matixs[i], F, M, N)
+        res = reverse_permutation(res, init_matixs[i], M, N)
+    return res
