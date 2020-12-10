@@ -50,6 +50,6 @@ if __name__ == '__main__':
 
     gray_lena = iu.read_img(file_path, iu.READ_GRAY)
 
-    a.encrypt(gray_lena, 0b11111111111111111111111)
+    a.encrypt(gray_lena, 0b11111000001111100000)
     a.decrypt()
     print(a.r.data)

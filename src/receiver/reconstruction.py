@@ -39,19 +39,19 @@ class Receiver:
         while i < self.H:
             while j < self.W:
                 if self.LM[i, j] == 1:
-                    data_k = int(self.ans[i, j] / 128)
                     # print(data_k)
-                    self.data = self.data | data_k
-                    length += 1
-                    if length >= b_length:
-                        self.data = bin(self.data)[-1:1:-1]
-                        # print(self.data)
-                        # print(int(self.data, 2))
-                        return
-                    self.data <<= 1
-                    self.ans[i, j] = self.ans[i,j] - data_k * 128
+                    if length < b_length:
+                        self.data <<= 1
+                        data_k = int(self.ans[i, j] / 128)
+                        self.data = self.data | data_k
+                        length += 1
+                    self.ans[i, j] = 0
                 j += 1
             i, j = i + 1, 0
+        self.data = bin(self.data)[-1:1:-1]
+        l = len(self.data)
+        if l < length:
+            self.data += "0" * (length - l)
 
     def decryption(self):
         self.decrypted_img = dec.decryptioner(self.encrypted_img, eu.SECRET_KEY, 256).astype(np.uint8)

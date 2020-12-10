@@ -15,13 +15,31 @@ class ReversibleDataHidingRGBA:
     def __init__(self):
         self.LM = None
 
-    def encrypt(self, img: np.ndarray, hide_data=0, pth="static/integral_rgba"):
+    @property
+    def max_length(self):
+        return self.r.e.max_length + \
+               self.g.e.max_length + \
+               self.b.e.max_length
+
+    @property
+    def r_data(self):
+        return self.r.r.data
+
+    @property
+    def g_data(self):
+        return self.g.r.data
+
+    @property
+    def b_data(self):
+        return self.b.r.data
+
+    def encrypt(self, img: np.ndarray, r_data=0, g_data=0, b_data=0, pth="static/integral_rgba"):
         b_ = img[:, :, 0]
         g_ = img[:, :, 1]
         r_ = img[:, :, 2]
-        self.b.encrypt(b_, pth=pth + "/b")
-        self.g.encrypt(g_, pth=pth + "/g")
-        self.r.encrypt(r_, pth=pth + "/r")
+        self.b.encrypt(b_, b_data, pth=pth + "/b")
+        self.g.encrypt(g_, g_data, pth=pth + "/g")
+        self.r.encrypt(r_, r_data, pth=pth + "/r")
         self.LM = self.b.LM.astype(np.uint8) * 4 + \
                   self.g.LM.astype(np.uint8) * 2 + \
                   self.r.LM.astype(np.uint8) * 1
@@ -63,10 +81,15 @@ if __name__ == '__main__':
 
     color_lena = iu.read_img(file_path, iu.READ_COLOR)
 
+    r_data = 0b11111000001111100000
+    g_data = 0b11111111110000000000
+    b_data = 0b10101010101010101010
+
     r = ReversibleDataHidingRGBA()
-    r.encrypt(color_lena)
+    r.encrypt(color_lena, r_data, g_data, b_data)
     iu.print_img(r.encrypted)
 
     # encrypted = iu.read_img(pu.path_join(root_path, "static", "integral_rgba", "image.png"), cv2.IMREAD_UNCHANGED)
     r.decrypt(r.encrypted)
     iu.print_img(r.decrypted)
+    print(r.r_data, r.g_data, r.b_data)
