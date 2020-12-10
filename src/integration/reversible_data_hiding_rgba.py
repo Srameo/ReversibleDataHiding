@@ -64,6 +64,8 @@ if __name__ == '__main__':
 
     r = ReversibleDataHidingRGBA()
     r.encrypt(color_lena)
+    iu.print_img(r.encrypted)
 
-    encrypted = iu.read_img(pu.path_join(root_path, "static", "integral_rgba", "image.png"), cv2.IMREAD_UNCHANGED)
-    r.decrypt(encrypted)
+    # encrypted = iu.read_img(pu.path_join(root_path, "static", "integral_rgba", "image.png"), cv2.IMREAD_UNCHANGED)
+    r.decrypt(r.encrypted)
+    iu.print_img(r.decrypted)
