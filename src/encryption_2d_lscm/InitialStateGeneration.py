@@ -19,13 +19,13 @@ def _2D_LSCM(x, y, r):
 
 
 def v(l):
-    '''
+    """
     使用IEEE754浮点标准转换为浮点数
     Args:
         l: 存储二进制的列表
     Return:
         reslut: 返回十进制浮点数
-    '''
+    """
     result = 0
     for i in range(len(l)):
         result += l[i] * (2 ** (-(i + 1)))
@@ -34,13 +34,13 @@ def v(l):
 
 
 def transformToDecimal(l):
-    '''
+    """
     将二进制串正常转换为十进制
     Args:
         l: 存储二进制的列表
     Return:
         result: 返回十进制整数
-    '''
+    """
     result = 0
     n = len(l) - 1
     for i in range(len(l)):
@@ -50,13 +50,13 @@ def transformToDecimal(l):
 
 
 def init_states(k):
-    '''
+    """
     生成4个初始状态
     Args:
         k: 密钥 {x0, y0, r, a1, a2, a3, a4}
     Returns:
         initialStates: 生成的四个初始状态
-    '''
+    """
     initialStates = [None] * 4
     r = [0] * 4
 
@@ -74,7 +74,7 @@ def init_states(k):
     return initialStates
 
 
-def init_confusion_matix(M, N, initialStates):
+def init_confusion_matrix(M, N, initialStates):
     init_matixs = [None] * 4
     for i in range(0, 4):
         init_matixs[i] = numpy.zeros((M, N))
@@ -88,5 +88,5 @@ def init_confusion_matix(M, N, initialStates):
 
 
 if __name__ == "__main__":
-
-    init_confusion_matix(20, 30, init_states(secretKey))
+    print(init_states(secretKey))
+    print(init_confusion_matrix(20, 30, init_states(secretKey)))
