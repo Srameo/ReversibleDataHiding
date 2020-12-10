@@ -17,9 +17,9 @@ class ReversibleDataHidingRGBA:
 
     @property
     def max_length(self):
-        return self.r.e.max_length + \
-               self.g.e.max_length + \
-               self.b.e.max_length
+        return self.r.e.max_length() + \
+               self.g.e.max_length() + \
+               self.b.e.max_length()
 
     @property
     def r_data(self):
@@ -93,3 +93,4 @@ if __name__ == '__main__':
     r.decrypt(r.encrypted)
     iu.print_img(r.decrypted)
     print(r.r_data, r.g_data, r.b_data)
+    print(r.max_length)
