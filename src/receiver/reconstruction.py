@@ -8,10 +8,11 @@ import src.encryption as en
 
 class Receiver:
 
-    def __init__(self, img: np.ndarray = None, LM: np.ndarray = None, predict = None):
+    def __init__(self, img: np.ndarray = None, LM: np.ndarray = None, decrypt_LM = True,predict = None):
         self.encrypted_img = img
         self.encrypted_LM = LM
         self.LM = []
+        self.decrypt_LM = decrypt_LM
         self.PE_stars = []
         self.PEAs = []
         self.PEAs_whole = []
@@ -27,7 +28,7 @@ class Receiver:
         if img is not None:
             self.H, self.W = img.shape
 
-    def data_extraction(self):
+    def data_extraction(self, b_length):
         """
         取出数据
         Returns:
@@ -42,10 +43,10 @@ class Receiver:
                     # print(data_k)
                     self.data = self.data | data_k
                     length += 1
-                    if length >= 104:
+                    if length >= b_length:
                         self.data = bin(self.data)[-1:1:-1]
-                        print(self.data)
-                        print(int(self.data, 2))
+                        # print(self.data)
+                        # print(int(self.data, 2))
                         return
                     self.data <<= 1
                     self.ans[i, j] = self.ans[i,j] - data_k * 128
@@ -54,14 +55,17 @@ class Receiver:
 
     def decryption(self):
         self.decrypted_img = dec.decryptioner(self.encrypted_img, eu.SECRET_KEY, 256).astype(np.uint8)
-        self.LM = dec.decryptioner(self.encrypted_LM, eu.SECRET_KEY, 256).astype(np.uint8)
+        if self.decrypt_LM:
+            self.LM = dec.decryptioner(self.encrypted_LM, eu.SECRET_KEY, 256).astype(np.uint8)
+        else:
+            self.LM = self.encrypted_LM
         # print(self.img)
         # en_test_img = eu.encrypt(self.img, eu.SECRET_KEY, 256)
         # print(en_test_img)
         # de_test_img = dec.decryptioner(en_test_img, eu.SECRET_KEY, 256)
         # print(de_test_img)
-        print(self.decrypted_img)
-        Receiver.save(self.decrypted_img, 'decrypted.png')
+        # print(self.decrypted_img)
+        # Receiver.save(self.decrypted_img, 'decrypted.png')
 
     def recomposition(self):
         """
@@ -83,7 +87,7 @@ class Receiver:
                 j += 1
             i += 1
             j = 0
-        Receiver.save(self.PEE, 'PEE.png')
+        # Receiver.save(self.PEE, 'PEE.png')
 
         #将图片分解为四部分
         #得到PE_stars(PEA)
@@ -97,7 +101,7 @@ class Receiver:
                 self.PE_stars[2][i, j] = self.PEE[2 * i + 1, 2 * j]
                 self.PE_stars[3][i, j] = self.PEE[2 * i + 1, 2 * j + 1]
         self.PEAs_whole = Receiver.composition(self.PE_stars[0], self.PE_stars[1], self.PE_stars[2], self.PE_stars[3])
-        Receiver.save(self.PEAs_whole, 'PEAs.png')
+        # Receiver.save(self.PEAs_whole, 'PEAs.png')
 
         #由I[0]获得预测矩阵Ps
         for i in range(0, 4):
@@ -107,14 +111,14 @@ class Receiver:
         self.__predict02()
         self.__predict03()
         self.Ps_whole = Receiver.composition(self.Ps[0], self.Ps[1], self.Ps[2], self.Ps[3])
-        Receiver.save(self.Ps_whole, 'Ps.png')
+        # Receiver.save(self.Ps_whole, 'Ps.png')
 
         #PEEs加上预测矩阵Ps
         #得到Is
         for j in range(1, 4):
             self.Is[j] += self.Ps[j]
         self.Is_whole = Receiver.composition(self.Is[0], self.Is[1], self.Is[2], self.Is[3])
-        Receiver.save(self.Is_whole, 'Is.png')
+        # Receiver.save(self.Is_whole, 'Is.png')
 
         #将Is四部分按原放回
         #得到复原图res
@@ -126,7 +130,7 @@ class Receiver:
                 self.res_img[2 * i, 2 * j + 1] = self.Is[1][i, j]
                 self.res_img[2 * i + 1, 2 * j] = self.Is[2][i, j]
                 self.res_img[2 * i + 1, 2 * j + 1] = self.Is[3][i, j]
-        Receiver.save(self.res_img, 'res.png')
+        # Receiver.save(self.res_img, 'res.png')
 
     @staticmethod
     def predict_method1(a, b):
@@ -205,8 +209,9 @@ class Receiver:
 def __test(img, LM):
     e = Receiver(img, LM)
     e.decryption()
-    e.data_extraction()
+    e.data_extraction(104)
     e.recomposition()
+    Receiver.save(e.res_img, 'res.png')
 
 if __name__ == '__main__':
     root_path = pu.get_root_path()

@@ -167,8 +167,8 @@ class Encryptor:
     def encryption(self):
         self.encrypted_I = eu.encrypt(self.ans, eu.SECRET_KEY, 256)
         self.encrypted_LM = eu.encrypt(self.LM, eu.SECRET_KEY, 256)
-        print(self.res_img)
-        print(self.LM)
+        # print(self.res_img)
+        # print(self.LM)
         return self.encrypted_I
 
     def max_length(self):
