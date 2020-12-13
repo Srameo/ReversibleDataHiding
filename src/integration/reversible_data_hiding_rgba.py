@@ -140,13 +140,14 @@ if __name__ == '__main__':
 
     r = ReversibleDataHidingRGBA()
     r.encrypt(color_lena, r_data, g_data, b_data)
-    iu.print_img(r.encrypted)
+    # iu.print_img(r.encrypted)
 
     # encrypted = iu.read_img(pu.path_join(root_path, "static", "integral_rgba", "image.png"), cv2.IMREAD_UNCHANGED)
     r.decrypt(r.encrypted)
-    iu.print_img(r.decrypted)
-    length = [len(str(r_data)), len(str(g_data)), len(str(b_data))]
+    # iu.print_img(r.decrypted)
+    length = [len(bin(r_data)), len(bin(g_data)), len(bin(b_data))]
     tplt = "{0:<" + str(length[0]) + "}{1:<" + str(length[1]) + "}{2:<" + str(length[2]) + "}"
-    print(tplt.format("r_data", "g_data", "b_data"))
+    print(tplt.format("r_data:", "g_data:", "b_data:"))
     print(tplt.format(r.r_data, r.g_data, r.b_data))
+    print("max length of hide data:")
     print(r.max_length)
