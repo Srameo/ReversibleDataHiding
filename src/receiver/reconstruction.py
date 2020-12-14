@@ -88,7 +88,7 @@ class Receiver:
                 j += 1
             i += 1
             j = 0
-        Receiver.save(self.PEE, 'PEE.png')
+        # Receiver.save(self.PEE, 'PEE.png')
 
         #将图片分解为四部分
         #得到PE_stars(PEA)
@@ -101,8 +101,8 @@ class Receiver:
                 self.PE_stars[1][i, j] = self.PEE[2 * i, 2 * j + 1]
                 self.PE_stars[2][i, j] = self.PEE[2 * i + 1, 2 * j]
                 self.PE_stars[3][i, j] = self.PEE[2 * i + 1, 2 * j + 1]
-        self.PEAs_whole = Receiver.composition(self.PE_stars[0], self.PE_stars[1], self.PE_stars[2], self.PE_stars[3])
-        Receiver.save(self.PEAs_whole, 'PEAs.png')
+        # self.PEAs_whole = Receiver.composition(self.PE_stars[0], self.PE_stars[1], self.PE_stars[2], self.PE_stars[3])
+        # Receiver.save(self.PEAs_whole, 'PEAs.png')
 
         #由I[0]获得预测矩阵Ps
         for i in range(0, 4):
@@ -111,15 +111,15 @@ class Receiver:
         self.__predict01()
         self.__predict02()
         self.__predict03()
-        self.Ps_whole = Receiver.composition(self.Ps[0], self.Ps[1], self.Ps[2], self.Ps[3])
-        Receiver.save(self.Ps_whole, 'Ps.png')
+        # self.Ps_whole = Receiver.composition(self.Ps[0], self.Ps[1], self.Ps[2], self.Ps[3])
+        # Receiver.save(self.Ps_whole, 'Ps.png')
 
         #PEEs加上预测矩阵Ps
         #得到Is
         for j in range(1, 4):
             self.Is[j] += self.Ps[j]
-        self.Is_whole = Receiver.composition(self.Is[0], self.Is[1], self.Is[2], self.Is[3])
-        Receiver.save(self.Is_whole, 'Is.png')
+        # self.Is_whole = Receiver.composition(self.Is[0], self.Is[1], self.Is[2], self.Is[3])
+        # Receiver.save(self.Is_whole, 'Is.png')
 
         #将Is四部分按原放回
         #得到复原图res
@@ -131,7 +131,7 @@ class Receiver:
                 self.res_img[2 * i, 2 * j + 1] = self.Is[1][i, j]
                 self.res_img[2 * i + 1, 2 * j] = self.Is[2][i, j]
                 self.res_img[2 * i + 1, 2 * j + 1] = self.Is[3][i, j]
-        Receiver.save(self.res_img, 'res.png')
+        # Receiver.save(self.res_img, 'res.png')
 
     @staticmethod
     def predict_method1(a, b):
