@@ -67,7 +67,7 @@ def ssim(im1, im2, k1=0.01, k2=0.03, win_size=11, L=255):
 
 if __name__ == "__main__":
     root_path = pu.get_root_path()
-    img1 = iu.read_img(pu.path_join(root_path, "static/input/200px-Lenna.jpg"), iu.READ_GRAY)
+    img1 = iu.read_img(pu.path_join(root_path, "static/input/rinbow.jpg"), iu.READ_GRAY)
     img2 = iu.read_img(pu.path_join(root_path, "static/test/unchanged/res.png"), iu.READ_GRAY)
 
     print(ssim(img1, img2))
