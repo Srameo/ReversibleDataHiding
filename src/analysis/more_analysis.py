@@ -65,6 +65,28 @@ def ssim(im1, im2, k1=0.01, k2=0.03, win_size=11, L=255):
     return np.mean(np.mean(ssim_map))
 
 
+def analysis3D(img1, img2):
+    b1 = img1[:, :, 0]
+    g1 = img1[:, :, 1]
+    r1 = img1[:, :, 2]
+    b2 = img2[:, :, 0]
+    g2 = img2[:, :, 1]
+    r2 = img2[:, :, 2]
+    r = np.array([0, 0, 0])
+    g = np.array([0, 0, 0])
+    b = np.array([0, 0, 0])
+    r[0] = ssim(r1, r2)
+    r[1] = mse(r1, r2)
+    r[2] = psnr(r1, r2)
+    g[0] = ssim(g1, g2)
+    g[1] = mse(g1, g2)
+    g[2] = psnr(g1, g2)
+    b[0] = ssim(b1, b2)
+    b[1] = mse(b1, b2)
+    b[2] = psnr(b1, b2)
+    return np.mean(r + g + b)
+
+
 if __name__ == "__main__":
     root_path = pu.get_root_path()
     img1 = iu.read_img(pu.path_join(root_path, "static/input/200px-Lenna.jpg"), iu.READ_GRAY)
