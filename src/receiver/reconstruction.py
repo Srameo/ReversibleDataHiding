@@ -52,6 +52,7 @@ class Receiver:
         l = len(self.data)
         if l < length:
             self.data += "0" * (length - l)
+        Receiver.save(self.ans, 'ans.png')
 
     def decryption(self):
         self.decrypted_img = dec.decryptioner(self.encrypted_img, eu.SECRET_KEY, 256).astype(np.uint8)

@@ -45,7 +45,7 @@ class ReversibleDataHiding:
 if __name__ == '__main__':
     a = ReversibleDataHiding()
     root_path = pu.get_root_path()
-    file_name = "200px-Lenna.jpg"
+    file_name = "timg.jpeg"
     file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
 
     gray_lena = iu.read_img(file_path, iu.READ_GRAY)
