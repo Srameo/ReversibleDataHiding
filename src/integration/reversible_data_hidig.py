@@ -45,22 +45,22 @@ class ReversibleDataHiding:
 if __name__ == '__main__':
     a = ReversibleDataHiding()
     root_path = pu.get_root_path()
-    file_name = "200px-Lenna.jpg"
+    file_name = "rinbow.jpg"
     file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
 
     gray_lena = iu.read_img(file_path, iu.READ_GRAY)
     changed_gray_lena = gray_lena.copy()
     changed_gray_lena[100, 100] = 0
 
-    a.encrypt(gray_lena, 0b11111000001111100000)
-    a.decrypt()
+    # a.encrypt(gray_lena, 0b11111000001111100000)
+    # a.decrypt()
 
-    # print("1")
-    # a.encrypt(gray_lena, 0b11111000001111100000, pth="static/test/unchanged")
-    # print("2")
-    # a.decrypt(pth="static/test/unchanged")
-    # print("3")
-    # a.encrypt(changed_gray_lena, 0b11111000001111100000, pth="static/test/changed")
-    # print("4")
-    # a.decrypt(pth="static/test/changed")
+    print("1")
+    a.encrypt(gray_lena, 0b11111000001111100000, pth="static/test/unchanged")
+    print("2")
+    a.decrypt(pth="static/test/unchanged")
+    print("3")
+    a.encrypt(changed_gray_lena, 0b11111000001111100000, pth="static/test/changed")
+    print("4")
+    a.decrypt(pth="static/test/changed")
     print(a.r.data)

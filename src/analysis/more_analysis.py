@@ -89,7 +89,7 @@ def analysis3D(img1, img2):
 
 if __name__ == "__main__":
     root_path = pu.get_root_path()
-    img1 = iu.read_img(pu.path_join(root_path, "static/input/200px-Lenna.jpg"), iu.READ_GRAY)
+    img1 = iu.read_img(pu.path_join(root_path, "static/input/rinbow.jpg"), iu.READ_GRAY)
     img2 = iu.read_img(pu.path_join(root_path, "static/test/unchanged/res.png"), iu.READ_GRAY)
 
     print(ssim(img1, img2))
