@@ -30,9 +30,9 @@ class ReversibleDataHiding:
 
     def decrypt(self, img=None, LM=None, LM_encrypted=True, pth="static/integral"):
         if img is None:
-            img = iu.read_img(pu.path_join(self.root_path, "static", "integral", "image.png"))
+            img = iu.read_img(pu.path_join(self.root_path, pth, "image.png"))
         if LM is None:
-            LM = iu.read_img(pu.path_join(self.root_path, "static", "integral", "LM.png"))
+            LM = iu.read_img(pu.path_join(self.root_path, pth, "LM.png"))
         r = Receiver(img, LM, LM_encrypted)
         r.decryption()
         r.data_extraction(self.data_length)
@@ -49,7 +49,18 @@ if __name__ == '__main__':
     file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
 
     gray_lena = iu.read_img(file_path, iu.READ_GRAY)
+    changed_gray_lena = gray_lena.copy()
+    changed_gray_lena[100, 100] = 0
 
     a.encrypt(gray_lena, 0b11111000001111100000)
     a.decrypt()
+
+    # print("1")
+    # a.encrypt(gray_lena, 0b11111000001111100000, pth="static/test/unchanged")
+    # print("2")
+    # a.decrypt(pth="static/test/unchanged")
+    # print("3")
+    # a.encrypt(changed_gray_lena, 0b11111000001111100000, pth="static/test/changed")
+    # print("4")
+    # a.decrypt(pth="static/test/changed")
     print(a.r.data)

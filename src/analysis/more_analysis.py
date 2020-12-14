@@ -1,24 +1,25 @@
-import cv2
+from scipy.signal import convolve2d
+
+import src.util.image_util as iu
+import src.util.path_util as pu
 import numpy as np
 import math
-from PIL import Image
-from scipy.signal import convolve2d
+
 
 def psnr(img1, img2):
     mse = np.mean((img1 - img2) ** 2)
-    if mse < 1.0e-10:
-        return 100
+    if mse < 1.0e-20:
+        return np.inf
     return 10 * math.log10(255.0 ** 2 / mse)
 
 
 def mse(img1, img2):
-    mse = np.mean((img1 - img2 ) ** 2)
+    mse = np.mean((img1 - img2) ** 2)
 
     return mse
 
 
 def matlab_style_gauss2D(shape=(3, 3), sigma=0.5):
-
     m, n = [(ss - 1.) / 2. for ss in shape]
     y, x = np.ogrid[-m:m + 1, -n:n + 1]
     h = np.exp(-(x * x + y * y) / (2. * sigma * sigma))
@@ -65,9 +66,10 @@ def ssim(im1, im2, k1=0.01, k2=0.03, win_size=11, L=255):
 
 
 if __name__ == "__main__":
-    im1 = Image.open("1.png").convert('L')
-    im2 = Image.open("2.png").convert('L')
+    root_path = pu.get_root_path()
+    img1 = iu.read_img(pu.path_join(root_path, "static/input/200px-Lenna.jpg"), iu.READ_GRAY)
+    img2 = iu.read_img(pu.path_join(root_path, "static/test/unchanged/res.png"), iu.READ_GRAY)
 
-    print(ssim(np.array(im1), np.array(im2)))
-    print(psnr(np.array(im1), np.array(im2)))
-    print(mse(np.array(im1), np.array(im2)))
+    print(ssim(img1, img2))
+    print(mse(img1, img2))
+    print(psnr(img1, img2))
