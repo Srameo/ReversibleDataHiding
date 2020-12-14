@@ -52,10 +52,13 @@ if __name__ == '__main__':
     changed_gray_lena = gray_lena.copy()
     changed_gray_lena[100, 100] = 0
 
-    print("1")
-    a.encrypt(gray_lena, 0b11111000001111100000, pth="static/test/unchanged")
-    print("2")
-    a.decrypt(pth="static/test/unchanged")
+    a.encrypt(gray_lena, 0b11111000001111100000)
+    a.decrypt()
+
+    # print("1")
+    # a.encrypt(gray_lena, 0b11111000001111100000, pth="static/test/unchanged")
+    # print("2")
+    # a.decrypt(pth="static/test/unchanged")
     # print("3")
     # a.encrypt(changed_gray_lena, 0b11111000001111100000, pth="static/test/changed")
     # print("4")

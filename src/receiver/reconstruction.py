@@ -6,9 +6,10 @@ import math
 import src.util.encrypt_util as eu
 import src.encryption as en
 
+
 class Receiver:
 
-    def __init__(self, img: np.ndarray = None, LM: np.ndarray = None, decrypt_LM = True,predict = None):
+    def __init__(self, img: np.ndarray = None, LM: np.ndarray = None, decrypt_LM=True, predict=None):
         self.encrypted_img = img
         self.encrypted_LM = LM
         self.LM = []
@@ -74,7 +75,7 @@ class Receiver:
         其中得到PEE与PEA的顺序调换（直接利用lm）
         Returns:
         """
-        #先还原正负号得到PEE
+        # 先还原正负号得到PEE
         self.PEE = self.ans.copy().astype(np.int)
         i, j = 0, 0
         while i < self.H:
@@ -90,8 +91,8 @@ class Receiver:
             j = 0
         # Receiver.save(self.PEE, 'PEE.png')
 
-        #将图片分解为四部分
-        #得到PE_stars(PEA)
+        # 将图片分解为四部分
+        # 得到PE_stars(PEA)
         h, w = int(self.H / 2), int(self.W / 2)
         for i in range(4):
             self.PE_stars.append(np.zeros((h, w), np.int))
@@ -104,7 +105,7 @@ class Receiver:
         # self.PEAs_whole = Receiver.composition(self.PE_stars[0], self.PE_stars[1], self.PE_stars[2], self.PE_stars[3])
         # Receiver.save(self.PEAs_whole, 'PEAs.png')
 
-        #由I[0]获得预测矩阵Ps
+        # 由I[0]获得预测矩阵Ps
         for i in range(0, 4):
             self.Is.append(self.PE_stars[i])
         self.Ps[0] = self.Is[0]
@@ -114,15 +115,15 @@ class Receiver:
         # self.Ps_whole = Receiver.composition(self.Ps[0], self.Ps[1], self.Ps[2], self.Ps[3])
         # Receiver.save(self.Ps_whole, 'Ps.png')
 
-        #PEEs加上预测矩阵Ps
-        #得到Is
+        # PEEs加上预测矩阵Ps
+        # 得到Is
         for j in range(1, 4):
             self.Is[j] += self.Ps[j]
         # self.Is_whole = Receiver.composition(self.Is[0], self.Is[1], self.Is[2], self.Is[3])
         # Receiver.save(self.Is_whole, 'Is.png')
 
-        #将Is四部分按原放回
-        #得到复原图res
+        # 将Is四部分按原放回
+        # 得到复原图res
         self.res_img = np.zeros((self.H, self.W), np.uint8)
         h, w = int(self.H / 2), int(self.W / 2)
         for i in range(h):
@@ -210,12 +211,14 @@ class Receiver:
         all = np.vstack((a, b))
         return all
 
+
 def __test(img, LM):
     e = Receiver(img, LM)
     e.decryption()
     e.data_extraction(104)
     e.recomposition()
     Receiver.save(e.res_img, 'res.png')
+
 
 if __name__ == '__main__':
     root_path = pu.get_root_path()
