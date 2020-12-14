@@ -128,8 +128,8 @@ class ReversibleDataHidingRGBA:
 
 if __name__ == '__main__':
     root_path = pu.get_root_path()
-    # file_name = "200px-Lenna.jpg"
-    file_name = "trees.png"
+    file_name = "200px-Lenna.jpg"
+    # file_name = "trees.png"
     file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
 
     color_lena = iu.read_img(file_path, iu.READ_COLOR)

@@ -74,19 +74,26 @@ class Encryptor:
             # self.PEs[i] = self.Ps[i] - self.Is[i]
             self.PEs.append(self.Is[i] - self.Ps[i])
         self.PE_stars.append(np.copy(self.Is[0]))
-        for i in range(1, 4):
-            self.PE_stars.append(np.copy(self.PEs[i]))
-            self.PE_stars[i][self.PE_stars[i] < 0] = abs(self.PE_stars[i][self.PE_stars[i] < 0]) + 64
-        # 计算PEA
         self.PEAs.append(np.copy(self.PE_stars[0]))
         self.raw_LM.append(np.zeros(self.PEAs[0].shape, np.bool))
         for i in range(1, 4):
-            self.PEAs.append(np.copy(self.PE_stars[i]))
+            self.PE_stars.append(np.copy(self.PEs[i]))
             temp = np.zeros(self.Is[i].shape, np.bool)
-            temp[self.PE_stars[i] < 64] = 1
+            temp[self.PE_stars[i] >= 0] = 1
+            self.PE_stars[i][self.PE_stars[i] < 0] = abs(self.PE_stars[i][self.PE_stars[i] < 0]) + 64
             self.raw_LM.append(temp)
-            # self.PEAs[i][self.PE_stars[i] > 64] = self.PEAs[i][self.PE_stars[i] > 64] | 0b10000000
-            # self.PEAs[i][self.PE_stars[i] < 64] = self.PEAs[i][self.PE_stars[i] < 64] & 0b01111111
+            self.PEAs.append(np.copy(self.PE_stars[i]))
+
+        # # 计算PEA
+        # self.PEAs.append(np.copy(self.PE_stars[0]))
+        # self.raw_LM.append(np.zeros(self.PEAs[0].shape, np.bool))
+        # for i in range(1, 4):
+        #     self.PEAs.append(np.copy(self.PE_stars[i]))
+        #     temp = np.zeros(self.Is[i].shape, np.bool)
+        #     temp[self.PE_stars[i] < 64] = 1
+        #     self.raw_LM.append(temp)
+        #     # self.PEAs[i][self.PE_stars[i] > 64] = self.PEAs[i][self.PE_stars[i] > 64] | 0b10000000
+        #     # self.PEAs[i][self.PE_stars[i] < 64] = self.PEAs[i][self.PE_stars[i] < 64] & 0b01111111
 
     @staticmethod
     def predict_method1(a, b):
@@ -102,8 +109,9 @@ class Encryptor:
         self.Ps[1] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if i < h - 1:
-                    self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
+                if j < w - 1:
+                    # self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
+                    self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i, j + 1])
                 else:
                     self.Ps[1][i, j] = I0[i, j]
 
@@ -113,8 +121,9 @@ class Encryptor:
         self.Ps[2] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if j < w - 1:
-                    self.Ps[2][i, j] = self.predict_method(I0[i, j + 1], I0[i, j])
+                if i < h - 1:
+                    # self.Ps[2][i, j] = self.predict_method(I0[i, j + 1], I0[i, j])
+                    self.Ps[2][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
                 else:
                     self.Ps[2][i, j] = I0[i, j]
 

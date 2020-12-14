@@ -1,4 +1,5 @@
-import numpy as np
+import src.util.image_util as iu
+import src.util.path_util as pu
 import math
 
 
@@ -37,32 +38,43 @@ def ent_analysis(x):
             current = x[i, j]
             if current not in labels.keys():
                 labels[current] = 0
-        labels[current] += 1
+            labels[current] += 1
     shannon_ent = 0.0  # 香农熵
     chi_ent = 0.0  # χ2
     for key in labels:
         prob = float(labels[key]) / scale  # 选择该标签的概率
-        shannon_ent -= prob * log(prob, 2)
+        if prob == 0:
+            continue
+        shannon_ent -= prob * math.log(prob, 2)
         chi_ent += (prob - 1 / 256) ** 2
     chi_ent = chi_ent * 256 * scale
     return shannon_ent, chi_ent
 
 
-def npcr_uaci_analysis(x,y):
+def npcr_uaci_analysis(x, y):
     [rows, cols] = x.shape
     scale = rows * cols
-    npcr=0.0
-    uaci=0.0
+    npcr = 0.0
+    uaci = 0.0
     for i in range(rows):
         for j in range(cols):
-            d=x[i,j]-y[i,j]
-            if d==0:
-                d=1
+            d = x[i, j] - y[i, j]
+            if d == 0:
+                d = 1
             else:
-                d=0
-            npcr+=d
-            uaci+=abs(x[i,j]-y[i,j])
-    npcr/=scale
-    uaci/=255*scale
-    return npcr,uaci
+                d = 0
+            npcr += d
+            uaci += abs(x[i, j] - y[i, j])
+    npcr /= scale
+    uaci /= (255 * scale)
+    return 1 - npcr, uaci
 
+
+if __name__ == "__main__":
+    root_path = pu.get_root_path()
+    img1 = iu.read_img(pu.path_join(root_path, "static/test/unchanged/image.png"), iu.READ_GRAY)
+    img2 = iu.read_img(pu.path_join(root_path, "static/test/changed/image.png"), iu.READ_GRAY)
+
+    print(npcr_uaci_analysis(img1, img2))
+    print(ent_analysis(img2))
+    print(cor_analysis(img1, img2))

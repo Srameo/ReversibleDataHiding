@@ -40,12 +40,13 @@ class Receiver:
             while j < self.W:
                 if self.LM[i, j] == 1:
                     # print(data_k)
+                    data_k = 0
                     if length < b_length:
                         self.data <<= 1
                         data_k = int(self.ans[i, j] / 128)
                         self.data = self.data | data_k
                         length += 1
-                    self.ans[i, j] = 0
+                    self.ans[i, j] -= 128 * data_k
                 j += 1
             i, j = i + 1, 0
         self.data = bin(self.data)[-1:1:-1]
@@ -87,7 +88,7 @@ class Receiver:
                 j += 1
             i += 1
             j = 0
-        # Receiver.save(self.PEE, 'PEE.png')
+        Receiver.save(self.PEE, 'PEE.png')
 
         #将图片分解为四部分
         #得到PE_stars(PEA)
@@ -101,7 +102,7 @@ class Receiver:
                 self.PE_stars[2][i, j] = self.PEE[2 * i + 1, 2 * j]
                 self.PE_stars[3][i, j] = self.PEE[2 * i + 1, 2 * j + 1]
         self.PEAs_whole = Receiver.composition(self.PE_stars[0], self.PE_stars[1], self.PE_stars[2], self.PE_stars[3])
-        # Receiver.save(self.PEAs_whole, 'PEAs.png')
+        Receiver.save(self.PEAs_whole, 'PEAs.png')
 
         #由I[0]获得预测矩阵Ps
         for i in range(0, 4):
@@ -111,14 +112,14 @@ class Receiver:
         self.__predict02()
         self.__predict03()
         self.Ps_whole = Receiver.composition(self.Ps[0], self.Ps[1], self.Ps[2], self.Ps[3])
-        # Receiver.save(self.Ps_whole, 'Ps.png')
+        Receiver.save(self.Ps_whole, 'Ps.png')
 
         #PEEs加上预测矩阵Ps
         #得到Is
         for j in range(1, 4):
             self.Is[j] += self.Ps[j]
         self.Is_whole = Receiver.composition(self.Is[0], self.Is[1], self.Is[2], self.Is[3])
-        # Receiver.save(self.Is_whole, 'Is.png')
+        Receiver.save(self.Is_whole, 'Is.png')
 
         #将Is四部分按原放回
         #得到复原图res
@@ -130,7 +131,7 @@ class Receiver:
                 self.res_img[2 * i, 2 * j + 1] = self.Is[1][i, j]
                 self.res_img[2 * i + 1, 2 * j] = self.Is[2][i, j]
                 self.res_img[2 * i + 1, 2 * j + 1] = self.Is[3][i, j]
-        # Receiver.save(self.res_img, 'res.png')
+        Receiver.save(self.res_img, 'res.png')
 
     @staticmethod
     def predict_method1(a, b):
@@ -146,8 +147,9 @@ class Receiver:
         self.Ps[1] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if i < h - 1:
-                    self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
+                if j < w - 1:
+                    # self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
+                    self.Ps[1][i, j] = self.predict_method(I0[i, j], I0[i, j + 1])
                 else:
                     self.Ps[1][i, j] = I0[i, j]
 
@@ -157,8 +159,9 @@ class Receiver:
         self.Ps[2] = np.zeros((h, w), np.int)
         for i in range(h):
             for j in range(w):
-                if j < w - 1:
-                    self.Ps[2][i, j] = self.predict_method(I0[i, j + 1], I0[i, j])
+                if i < h - 1:
+                    # self.Ps[2][i, j] = self.predict_method(I0[i, j + 1], I0[i, j])
+                    self.Ps[2][i, j] = self.predict_method(I0[i, j], I0[i + 1, j])
                 else:
                     self.Ps[2][i, j] = I0[i, j]
 
@@ -195,6 +198,7 @@ class Receiver:
         :param pth: 存储的路径
         :return:
         """
+        root_path = pu.get_root_path()
         out = pu.path_join(root_path, pu.REC_PATH)
         pth = pu.path_join(out, name)
         iu.save_img(img, pth)
