@@ -1,6 +1,7 @@
 import src.util.image_util as iu
 import src.util.path_util as pu
 import math
+import numpy as np
 
 
 def cor_analysis(x, y):
@@ -68,6 +69,28 @@ def npcr_uaci_analysis(x, y):
     npcr /= scale
     uaci /= (255 * scale)
     return 1 - npcr, uaci
+
+
+def analysis3D(img1, img2):
+    b1 = img1[:, :, 0]
+    g1 = img1[:, :, 1]
+    r1 = img1[:, :, 2]
+    b2 = img2[:, :, 0]
+    g2 = img2[:, :, 1]
+    r2 = img2[:, :, 2]
+    r = np.array([0, 0, 0, 0, 0])
+    g = np.array([0, 0, 0, 0, 0])
+    b = np.array([0, 0, 0, 0, 0])
+    r[0], r[1] = npcr_uaci_analysis(r1, r2)
+    g[0], g[1] = npcr_uaci_analysis(g1, g2)
+    b[0], b[1] = npcr_uaci_analysis(b1, b2)
+    r[2] = ent_analysis(r2)
+    g[2] = ent_analysis(g2)
+    b[2] = ent_analysis(b2)
+    r[3], r[4] = cor_analysis(r1, r2)
+    g[3], g[4] = cor_analysis(g1, g2)
+    b[3], b[4] = cor_analysis(b1, b2)
+    return np.mean(r + g + b)
 
 
 if __name__ == "__main__":

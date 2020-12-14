@@ -64,3 +64,4 @@ if __name__ == '__main__':
     print("4")
     a.decrypt(pth="static/test/changed")
     print(a.r.data)
+    print(a.r.data)
