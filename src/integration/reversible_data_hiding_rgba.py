@@ -1,5 +1,4 @@
 from src.integration.reversible_data_hidig import ReversibleDataHiding
-import src.util.encrypt_util as decryptioner
 import src.util.encrypt_util as eu
 import src.util.path_util as pu
 import src.util.image_util as iu
@@ -8,6 +7,9 @@ import threading
 
 
 class RDHEncryptedThread(threading.Thread):
+    """
+    加密用的线程
+    """
     def __init__(self, rdh, data, hide_data, path, color):
         threading.Thread.__init__(self)
         self.rdh = rdh
@@ -23,6 +25,9 @@ class RDHEncryptedThread(threading.Thread):
 
 
 class RDHDecryptedThread(threading.Thread):
+    """
+    解密用的线程
+    """
     def __init__(self, rdh, data, LM, path, color):
         threading.Thread.__init__(self)
         self.rdh = rdh
@@ -38,6 +43,9 @@ class RDHDecryptedThread(threading.Thread):
 
 
 class ReversibleDataHidingRGBA:
+
+    __INTEGRAL_PATH = pu.path_join("static", "integral_rgba")
+
     b = ReversibleDataHiding()
     g = ReversibleDataHiding()
     r = ReversibleDataHiding()
@@ -63,13 +71,13 @@ class ReversibleDataHidingRGBA:
     def b_data(self):
         return self.b.r.data
 
-    def encrypt(self, img: np.ndarray, r_data=0, g_data=0, b_data=0, pth="static/integral_rgba"):
+    def encrypt(self, img: np.ndarray, r_data=0, g_data=0, b_data=0, pth=__INTEGRAL_PATH):
         b_ = img[:, :, 0]
         g_ = img[:, :, 1]
         r_ = img[:, :, 2]
-        b_thread = RDHEncryptedThread(self.b, b_, b_data, pth + "/b", "b")
-        g_thread = RDHEncryptedThread(self.g, g_, g_data, pth + "/g", "g")
-        r_thread = RDHEncryptedThread(self.r, r_, r_data, pth + "/r", "r")
+        b_thread = RDHEncryptedThread(self.b, b_, b_data, pu.path_join(pth, "b"), "b")
+        g_thread = RDHEncryptedThread(self.g, g_, g_data, pu.path_join(pth, "g"), "g")
+        r_thread = RDHEncryptedThread(self.r, r_, r_data, pu.path_join(pth, "r"), "r")
         b_thread.start()
         g_thread.start()
         r_thread.start()
@@ -98,16 +106,16 @@ class ReversibleDataHidingRGBA:
         b_ = img[:, :, 2]
         a_ = img[:, :, 3]
         print("decrypting LM ...")
-        a_ = decryptioner(a_, eu.SECRET_KEY, 256).astype(np.uint8)
+        a_ = eu.decrypt(a_, eu.SECRET_KEY, 256).astype(np.uint8)
         print("LM decrypted!")
         r_LM = a_ % 2
         a_ >>= 1
         g_LM = a_ % 2
         a_ >>= 1
         b_LM = a_ % 2
-        r_thread = RDHDecryptedThread(self.r, r_, r_LM, pth + "/r", "r")
-        g_thread = RDHDecryptedThread(self.g, g_, g_LM, pth + "/g", "g")
-        b_thread = RDHDecryptedThread(self.b, b_, b_LM, pth + "/b", "b")
+        r_thread = RDHDecryptedThread(self.r, r_, r_LM, pu.path_join(pth, "r"), "r")
+        g_thread = RDHDecryptedThread(self.g, g_, g_LM, pu.path_join(pth, "g"), "g")
+        b_thread = RDHDecryptedThread(self.b, b_, b_LM, pu.path_join(pth, "b"), "b")
         b_thread.start()
         g_thread.start()
         r_thread.start()

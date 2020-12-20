@@ -56,9 +56,9 @@ class Receiver:
         Receiver.save(self.ans, 'ans.png')
 
     def decryption(self):
-        self.decrypted_img = dec.decryptioner(self.encrypted_img, eu.SECRET_KEY, 256).astype(np.uint8)
+        self.decrypted_img = dec.decrypt(self.encrypted_img, eu.SECRET_KEY, 256).astype(np.uint8)
         if self.decrypt_LM:
-            self.LM = dec.decryptioner(self.encrypted_LM, eu.SECRET_KEY, 256).astype(np.uint8)
+            self.LM = dec.decrypt(self.encrypted_LM, eu.SECRET_KEY, 256).astype(np.uint8)
         else:
             self.LM = self.encrypted_LM
         # print(self.img)

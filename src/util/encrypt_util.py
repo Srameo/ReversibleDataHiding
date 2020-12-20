@@ -7,7 +7,7 @@ import src.util.image_util as iu
 import src.util.path_util as pu
 from src.util.for_encrypt.encryption_2d_lscm.InitialStateGeneration import init_confusion_matrix, init_states
 from src.util.for_encrypt.encryption_2d_lscm.diffusion import row_diffusion, column_diffusion
-from src.util.for_encrypt.encryption_2d_lscm import permutation
+from src.util.for_encrypt.encryption_2d_lscm.permutation import permutation
 import src.util.for_encrypt.decryption as dec
 
 SECRET_KEY = {

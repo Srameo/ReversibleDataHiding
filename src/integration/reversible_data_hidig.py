@@ -6,6 +6,8 @@ import src.util.image_util as iu
 
 class ReversibleDataHiding:
 
+    __INTEGRAL_PATH = pu.path_join("static", "integral")
+
     def __init__(self):
         self.r = None
         self.data_length = 0
@@ -15,7 +17,17 @@ class ReversibleDataHiding:
         self.decrypted = None
         self.root_path = pu.get_root_path()
 
-    def encrypt(self, img, hide_data: int = 0, pth="static/integral"):
+    def encrypt(self, img, hide_data: int = 0, pth=__INTEGRAL_PATH):
+        """
+
+        Args:
+            img: 要加密的图片
+            hide_data: 想要隐藏的数据
+            pth: 保存的相对路径
+
+        Returns:
+
+        """
         self.data_length = hide_data.bit_length()
         e = Encryptor(img)
         e.decomposition()
@@ -28,7 +40,18 @@ class ReversibleDataHiding:
         self.encrypted = e.encrypted_I
         self.e = e
 
-    def decrypt(self, img=None, LM=None, LM_encrypted=True, pth="static/integral"):
+    def decrypt(self, img=None, LM=None, LM_encrypted=True, pth=__INTEGRAL_PATH):
+        """
+
+        Args:
+            img: 需要解密的图像
+            LM: 保存有LM图像
+            LM_encrypted: LM是否需要解密
+            pth: 保存的路径
+
+        Returns:
+
+        """
         if img is None:
             img = iu.read_img(pu.path_join(self.root_path, pth, "image.png"))
         if LM is None:

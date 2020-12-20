@@ -4,7 +4,6 @@
 import numpy as np
 
 
-
 def permutation(P, S, M, N):
     # 对S的每一列进行排序并获得索引矩阵O
     O = np.zeros((M, N))
