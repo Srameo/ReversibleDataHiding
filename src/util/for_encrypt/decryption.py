@@ -1,9 +1,5 @@
 import numpy
-import math
-import src.util.image_util as iu
-import src.util.path_util as pu
-from src.encryption_2d_lscm.InitialStateGeneration import init_confusion_matrix, init_states
-import numpy as np
+from src.util.for_encrypt.encryption_2d_lscm.InitialStateGeneration import init_confusion_matrix, init_states
 
 # 测试数据
 '''

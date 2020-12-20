@@ -1,11 +1,10 @@
 from src.integration.reversible_data_hidig import ReversibleDataHiding
-from src.receiver.decryption import decryptioner
+import src.util.encrypt_util as decryptioner
 import src.util.encrypt_util as eu
 import src.util.path_util as pu
 import src.util.image_util as iu
 import numpy as np
 import threading
-import cv2
 
 
 class RDHEncryptedThread(threading.Thread):

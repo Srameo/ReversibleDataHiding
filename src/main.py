@@ -1,8 +1,6 @@
 import src.util.image_util as iu
 import src.util.path_util as pu
-import cv2
-from src.util.encrypt_util import encrypt
-from src.receiver.decryption import decryptioner, secretKey
+from src.util.encrypt_util import encrypt, decrypt, SECRET_KEY
 import numpy as np
 
 if __name__ == '__main__':
@@ -28,8 +26,8 @@ if __name__ == '__main__':
     root_path = pu.get_root_path()
     img = iu.read_img(pu.path_join(root_path, "static/input/trees.png"), iu.READ_GRAY)
 
-    e = encrypt(img, secretKey, 256)
-    d = decryptioner(e, secretKey, 256)
+    e = encrypt(img, SECRET_KEY, 256)
+    d = decrypt(e, SECRET_KEY, 256)
 
     diff = np.sum(abs(d.astype(np.int) - img.astype(np.int)))
     print(diff)

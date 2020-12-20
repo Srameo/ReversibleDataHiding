@@ -1,10 +1,9 @@
-import src.receiver.decryption as dec
+import src.util.encrypt_util as dec
 import numpy as np
 import src.util.image_util as iu
 import src.util.path_util as pu
 import math
 import src.util.encrypt_util as eu
-import src.encryption as en
 
 
 class Receiver:

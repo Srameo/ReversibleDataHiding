@@ -3,7 +3,6 @@ import src.util.image_util as iu
 import src.util.path_util as pu
 import math
 import src.util.encrypt_util as eu
-import src.receiver.decryption as dec
 
 __TEST_IMAGE = np.array([[97, 97, 114, 162, 189, 180, 187, 192],
                          [87, 119, 123, 156, 174, 182, 184, 189],

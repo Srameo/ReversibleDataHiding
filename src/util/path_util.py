@@ -1,3 +1,8 @@
+"""
+用于计算路径的工具函数
+"""
+
+
 import os
 
 PROJECT_NAME = "ReversibleDataHiding"
