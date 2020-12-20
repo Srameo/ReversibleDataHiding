@@ -16,7 +16,7 @@
     - [encryption](./src/encryption/README.md): 加密与隐藏数据部分的数据
     - [integration](./src/integration/README.md): 加密和解密双向的整合
     - [receiver](./src/receiver/README.md): 重构的源文件
-    - [util](./src/util/)
+    - [util](./src/util/): 工具package
 
 ## environment
 
