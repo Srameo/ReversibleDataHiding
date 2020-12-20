@@ -29,7 +29,7 @@
 
 - 靳鑫: [https://github.com/Srameo](https://github.com/Srameo)
 - 陈昭宇: [https://github.com/czy1812977](https://github.com/czy1812977)
-- 张祥宇: [https://github.com/westrious](https://github.com/westrious)
+- 张祥玙: [https://github.com/westrious](https://github.com/westrious)
 - 吴若愚: [https://github.com/Wuruoyu1](https://github.com/Wuruoyu1)
 - 贾雨欣: [https://github.com/xiaohuaniangniang](https://github.com/xiaohuaniangniang)
 - 李奥
