@@ -5,7 +5,6 @@ import src.util.image_util as iu
 
 
 class ReversibleDataHiding:
-
     __INTEGRAL_PATH = pu.path_join("static", "integral")
 
     def __init__(self):
@@ -65,26 +64,36 @@ class ReversibleDataHiding:
         self.r = r
 
 
-if __name__ == '__main__':
+def main(file_name):
     a = ReversibleDataHiding()
     root_path = pu.get_root_path()
-    file_name = "timg.jpeg"
     file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
 
     gray_lena = iu.read_img(file_path, iu.READ_GRAY)
-    changed_gray_lena = gray_lena.copy()
-    changed_gray_lena[100, 100] = 0
+    # changed_gray_lena = gray_lena.copy()
+    # changed_gray_lena[100, 100] = 0
 
     # a.encrypt(gray_lena, 0b11111000001111100000)
     # a.decrypt()
 
-    print("1")
-    a.encrypt(gray_lena, 0b11111000001111100000, pth="static/test/unchanged")
-    print("2")
-    a.decrypt(pth="static/test/unchanged")
-    print("3")
-    a.encrypt(changed_gray_lena, 0b11111000001111100000, pth="static/test/changed")
-    print("4")
-    a.decrypt(pth="static/test/changed")
+    # print("1")
+    print("encrypting!")
+    print("insert data: 0b11111000001111100000")
+    a.encrypt(gray_lena, 0b11111000001111100000)
+    # print("2")
+    print("decrypting!")
+    a.decrypt()
+    # print("3")
+    # a.encrypt(changed_gray_lena, 0b11111000001111100000, pth="static/test/changed")
+    # print("4")
+    # a.decrypt(pth="static/test/changed")
+    print("extract data: ", end="")
     print(a.r.data)
-    print(a.r.data)
+    print(f"hide data max length: {a.e.max_length()}")
+    print(f"image size: {gray_lena.shape}")
+    # print(a.r.data)
+    print("file save in /static/integral!")
+
+
+if __name__ == '__main__':
+    main("200px-Lenna.jpg")

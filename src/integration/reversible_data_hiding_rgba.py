@@ -133,9 +133,8 @@ class ReversibleDataHidingRGBA:
         iu.save_img(self.decrypted, pu.path_join(pu.get_root_path(), pth, "res.png"))
 
 
-if __name__ == '__main__':
+def main(file_name="200px-Lenna.jpg"):
     root_path = pu.get_root_path()
-    file_name = "200px-Lenna.jpg"
     # file_name = "trees.png"
     file_path = pu.path_join(root_path, pu.INPUT_PATH, file_name)
 
@@ -145,6 +144,12 @@ if __name__ == '__main__':
     g_data = 0b11111111110000000000
     b_data = 0b10101010101010101010
 
+    length = [len(bin(r_data)), len(bin(g_data)), len(bin(b_data))]
+    tplt = "{0:<" + str(length[0]) + "}\t{1:<" + str(length[1]) + "}\t{2:<" + str(length[2]) + "}"
+
+    print(tplt.format("r_data(insert):", "g_data(insert):", "b_data(insert):"))
+    print(tplt.format(bin(r_data), bin(g_data), bin(b_data)))
+
     r = ReversibleDataHidingRGBA()
     r.encrypt(color_lena, r_data, g_data, b_data)
     # iu.print_img(r.encrypted)
@@ -152,9 +157,12 @@ if __name__ == '__main__':
     # encrypted = iu.read_img(pu.path_join(root_path, "static", "integral_rgba", "image.png"), cv2.IMREAD_UNCHANGED)
     r.decrypt(r.encrypted)
     # iu.print_img(r.decrypted)
-    length = [len(bin(r_data)), len(bin(g_data)), len(bin(b_data))]
-    tplt = "{0:<" + str(length[0]) + "}{1:<" + str(length[1]) + "}{2:<" + str(length[2]) + "}"
-    print(tplt.format("r_data:", "g_data:", "b_data:"))
+    print(tplt.format("r_data(extract):", "g_data(extract):", "b_data(extract):"))
     print(tplt.format(r.r_data, r.g_data, r.b_data))
-    print("max length of hide data:")
-    print(r.max_length)
+    print(f"max length of hide data: {r.max_length}")
+    print(f"image size: {color_lena.shape}")
+    print("file save in /static/integral_rgba!")
+
+
+if __name__ == '__main__':
+    main()

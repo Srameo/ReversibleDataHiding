@@ -1,6 +1,12 @@
 # ReversibleDataHiding
 > 2020秋-信息安全基础-高铁杠教授
 
+- [ReversibleDataHiding](#reversibledatahiding)
+  - [File Structure](#file-structure)
+  - [environment](#environment)
+  - [contributor](#contributor)
+  - [使用说明](#使用说明)
+
 ## File Structure
 - [\$root\$](./README.md): root folder
   - [static](./static/README.md): image folder
@@ -33,3 +39,12 @@
 - 吴若愚: [https://github.com/Wuruoyu1](https://github.com/Wuruoyu1)
 - 贾雨欣: [https://github.com/xiaohuaniangniang](https://github.com/xiaohuaniangniang)
 - 李奥
+
+## 使用说明
+
+1. 确保电脑上装有[environment](#environment)中所有的需求!
+2. 进入src文件夹
+3. 执行`python main.py arg1 [arg2]`
+   - arg1: `gary` 或者 `rgb`, 表示需要加密的图像为灰度或者彩色
+   - arg2: 想要加密的文件名, **文件必须在`/static/input`中！否则会找不到文件！**
+4. 其中彩色图像的加密解密以及中间结果保存在`/static/integral_rgba`中，灰度图像的保存在`/static/integral`中
